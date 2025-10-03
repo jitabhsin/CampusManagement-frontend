@@ -1,41 +1,97 @@
-// C:\Users\ASUS\Documents\Infosysproject2025\campus-frontVite-main\src\Components\LoginComponent\AdminMenu.jsx
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Navbar, Nav, NavDropdown } from "react-bootstrap";
+import React, { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const AdminMenu = () => {
-  const navigate = useNavigate();
+  const [openDropdown, setOpenDropdown] = useState(null);
+
+  const toggleDropdown = (dropdownName) => {
+    setOpenDropdown(openDropdown === dropdownName ? null : dropdownName);
+  };
 
   return (
-    <div>
-      <Navbar bg="dark" variant="dark" expand="lg" className="px-3">
-        <Navbar.Brand as={Link} to="/AdminMenu">
-          Admin Dashboard
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="admin-navbar-nav" />
-        <Navbar.Collapse id="admin-navbar-nav">
-          <Nav className="me-auto">
-            <NavDropdown title="View Reports" id="admin-reports-dropdown">
-              <NavDropdown.Item as={Link} to="/lost-item-report">
-                Lost Item Report
-              </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/found-item-report">
-                Found Item Report
-              </NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
-          <Nav>
-            <Nav.Link onClick={() => navigate("/")}>Logout</Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
-
-      <div className="container text-center mt-5">
-        <h1 className="display-4">Welcome, Admin!</h1>
-        <p className="lead">
-          Use the navigation bar to view lost and found item reports.
-        </p>
+    <div className="mx-auto px-4">
+      <div className="text-center bg-green-200 py-4">
+        <h1 className="text-4xl font-bold text-green-500 underline italic">
+          Lost Found Admin Menu
+        </h1>
       </div>
+
+      <nav className="bg-yellow-400 py-2">
+        <div className="flex items-center justify-between px-4">
+          {/* Items Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => toggleDropdown("items")}
+              className="flex items-center px-3 py-2 text-black font-bold hover:bg-yellow-500 rounded"
+            >
+              Items
+              <ChevronDown className="w-4 h-4 ml-1" />
+            </button>
+            {openDropdown === "items" && (
+              <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded shadow-lg z-50 border border-gray-200">
+                <div className="py-2">
+                  <Link
+                    to="/LostSubmit"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    Lost Item Registration
+                  </Link>
+                  <Link
+                    to="/FoundSubmit"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    Found Item Submission
+                  </Link>
+                  <Link
+                    to="/LostReport"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    Lost Item Track
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Reports Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => toggleDropdown("report")}
+              className="flex items-center px-3 py-2 text-black font-bold hover:bg-yellow-500 rounded"
+            >
+              Report
+              <ChevronDown className="w-4 h-4 ml-1" />
+            </button>
+            {openDropdown === "report" && (
+              <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded shadow-lg z-50 border border-gray-200">
+                <div className="py-2">
+                  <Link
+                    to="/LostReport"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    Lost Item Report
+                  </Link>
+                  <Link
+                    to="/FoundReport"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    Found Item Report
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Logout */}
+          <Link
+            to="/"
+            className="px-3 py-2 text-black font-bold bg-red-500 hover:bg-red-600 rounded"
+          >
+            Logout
+          </Link>
+        </div>
+      </nav>
     </div>
   );
 };

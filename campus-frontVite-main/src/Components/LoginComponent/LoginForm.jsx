@@ -96,7 +96,7 @@ const LoginForm = () => {
             />
           </div>
           {errors.username && (
-            <p className="text-red-400 text-sm mt-1 text-center">
+            <p className="text-red-500 font-bold text-sm mt-1 text-center">
               {errors.username}
             </p>
           )}
@@ -117,7 +117,7 @@ const LoginForm = () => {
             />
           </div>
           {errors.password && (
-            <p className="text-red-400 text-sm mt-1 text-center">
+            <p className="text-red-500 font-bold text-sm mt-1 text-center">
               {errors.password}
             </p>
           )}

@@ -125,7 +125,7 @@ const SignupForm = () => {
                   />
                 </div>
                 {errors.username && (
-                  <p className="text-red-400 text-sm mt-1 text-center">
+                  <p className="text-red-500 font-bold text-sm mt-1 text-center">
                     {errors.username}
                   </p>
                 )}
@@ -147,7 +147,7 @@ const SignupForm = () => {
                   />
                 </div>
                 {errors.password && (
-                  <p className="text-red-400 text-sm mt-1 text-center">
+                  <p className="text-red-500 font-bold text-sm mt-1 text-center">
                     {errors.password}
                   </p>
                 )}
@@ -172,7 +172,7 @@ const SignupForm = () => {
                   />
                 </div>
                 {errors.personName && (
-                  <p className="text-red-400 text-sm mt-1 text-center">
+                  <p className="text-red-500 font-bold text-sm mt-1 text-center">
                     {errors.personName}
                   </p>
                 )}
@@ -202,7 +202,7 @@ const SignupForm = () => {
                   />
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-red-400 text-sm mt-1 text-center">
+                  <p className="text-red-500 font-bold text-sm mt-1 text-center">
                     {errors.confirmPassword}
                   </p>
                 )}
@@ -226,7 +226,7 @@ const SignupForm = () => {
               />
             </div>
             {errors.email && (
-              <p className="text-red-400 text-sm mt-1 text-center">
+              <p className="text-red-500 font-bold text-sm mt-1 text-center">
                 {errors.email}
               </p>
             )}
@@ -253,7 +253,7 @@ const SignupForm = () => {
                 </select>
               </div>
               {errors.role && (
-                <p className="text-red-400 text-sm mt-1 text-center">
+                <p className="text-red-500 font-bold text-sm mt-1 text-center">
                   {errors.role}
                 </p>
               )}

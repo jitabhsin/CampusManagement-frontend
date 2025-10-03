@@ -1,12 +1,9 @@
-// C:\Users\ASUS\Documents\Infosysproject2025\campus-frontVite-main\src\Components\LoginComponent\SignupPage.jsx
 import React from "react";
 import GridMotion from "../../../public/GridMotion";
 import SignupForm from "./SignupForm";
 
-// Corrected component name from SigninPage to SignupPage
-const SignupPage = () => {
+const SigninPage = () => {
   const items = [
-    // Array content is lengthy, keeping it as is.
     "Item-1",
     "https://images.unsplash.com/photo-1612023395494-1c4050b68647?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "https://images.unsplash.com/photo-1671067837196-1fcda33a63cb?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -38,7 +35,7 @@ const SignupPage = () => {
 
   return (
     <main className="relative h-screen w-full flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 z-0">
+      <div className="absolute insert-0 z-0">
         <GridMotion items={items} />
       </div>
       <div className="relative z-10">
@@ -48,5 +45,4 @@ const SignupPage = () => {
   );
 };
 
-// Corrected export
-export default SignupPage;
+export default SigninPage;
