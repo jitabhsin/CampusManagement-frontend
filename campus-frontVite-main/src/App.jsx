@@ -1,14 +1,16 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./Components/LoginComponent/LoginPage";
 import AdminMenu from "./Components/LoginComponent/AdminMenu";
-import StudentMenuGoodUI from "./Components/LoginComponent/StudentMenuGoodUI";
+import StudentMenu from "./Components/LoginComponent/StudentMenu";
 import SigninPage from "./Components/LoginComponent/SignupPage";
 import SingleStudentDetails from "./Components/LoginComponent/SingleStudentDetails";
 import LostItemSubmit from "./Components/ItemComponent/LostItemSubmit";
 import LostItemReport from "./Components/ItemComponent/LostItemReport";
-import FoundItemSubmission from "./Components/ItemComponent/FoundItemSubmission"; // fresh submission
-import FoundItemRedirected from "./Components/ItemComponent/FoundItemRedirected"; // redirected
+import FoundItemSubmission from "./Components/ItemComponent/FoundItemSubmission";
+import FoundItemRedirected from "./Components/ItemComponent/FoundItemRedirected";
 import FoundItemReport from "./Components/ItemComponent/FoundItemReport";
+import Personal from "./Components/LoginComponent/Personal";
+import StudentList from "./Components/LoginComponent/StudentList";
 import "./App.css";
 
 function App() {
@@ -16,16 +18,27 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
+          {/* Authentication & Registration */}
           <Route path="/" element={<LoginPage />} />
           <Route path="/Register" element={<SigninPage />} />
+
+          {/* Admin & Student Menus */}
           <Route path="/AdminMenu" element={<AdminMenu />} />
-          <Route path="/StudentMenu" element={<StudentMenuGoodUI />} />
+          <Route path="/StudentMenu" element={<StudentMenu />} />
+
+          {/* Student Details */}
           <Route path="/SingleStudentDetail" element={<SingleStudentDetails />} />
+          <Route path="/Students" element={<StudentList />} />
+
+          {/* Lost Item Routes */}
           <Route path="/LostSubmit" element={<LostItemSubmit />} />
           <Route path="/LostReport" element={<LostItemReport />} />
-          <Route path="/FoundSubmit" element={<FoundItemSubmission />} /> {/* fresh */}
-          <Route path="/Found-Redirected/:id" element={<FoundItemRedirected />} /> {/* redirected */}
+
+          {/* Found Item Routes */}
+          <Route path="/FoundSubmit" element={<FoundItemSubmission />} />
+          <Route path="/Found-Redirected/:id" element={<FoundItemRedirected />} />
           <Route path="/FoundReport" element={<FoundItemReport />} />
+          <Route path="/Personal" element={<Personal />} />
         </Routes>
       </BrowserRouter>
     </div>

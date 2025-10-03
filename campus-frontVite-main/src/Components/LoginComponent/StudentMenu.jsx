@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, Package, CheckCircle, MapPin, FileText, Bell, Settings, LogOut, Menu, X } from "lucide-react";
-
+import { ChevronDown, Package, CheckCircle, MapPin, FileText, Bell, Settings, LogOut, Menu, X, User } from "lucide-react";
+ 
 const StudentMenuGoodUI = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -15,7 +15,6 @@ const StudentMenuGoodUI = () => {
       icon: Package,
       items: [
         { name: "Lost Item Registration", href: "/LostSubmit", icon: MapPin },
-        // CHANGE: Added a hyphen to match the route in App.jsx
         { name: "Found Item Submission", href: "/FoundSubmit", icon: CheckCircle },
         { name: "Lost Item Track", href: "/LostReport", icon: FileText },
       ],
@@ -26,6 +25,13 @@ const StudentMenuGoodUI = () => {
       items: [
         { name: "Found Item Report", href: "/FoundReport", icon: FileText },
         { name: "Lost Item Report", href: "/LostReport", icon: FileText },
+      ],
+    },
+    {
+      title: "Profile",  // New menu for student details
+      icon: User,
+      items: [
+        { name: "Personal Details", href: "/Personal", icon: User },
       ],
     },
   ];
