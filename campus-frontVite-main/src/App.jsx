@@ -35,7 +35,7 @@ function App() {
           <Route path="/LostReport" element={<LostItemReport />} />
 
           {/* Found Item Routes */}
-          <Route path="/FoundSubmit" element={<FoundItemSubmission />} />
+          <Route path="/Found-Submit" element={<FoundItemSubmission />} />
           <Route path="/Found-Submit/:id" element={<FoundItemRedirected />} />
           <Route path="/FoundReport" element={<FoundItemReport />} />
           <Route path="/Personal" element={<Personal />} />
