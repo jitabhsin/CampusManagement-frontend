@@ -85,6 +85,12 @@ const AdminMenu = () => {
                   >
                     View Students
                   </Link>
+                  <Link
+                    to="/DeleteStudentList"
+                    className="block px-4 py-2 hover:bg-gray-100"
+                  >
+                    Delete Student
+                  </Link>
                 </div>
               </div>
             )}

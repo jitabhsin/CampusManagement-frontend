@@ -11,6 +11,7 @@ import FoundItemRedirected from "./Components/ItemComponent/FoundItemRedirected"
 import FoundItemReport from "./Components/ItemComponent/FoundItemReport";
 import Personal from "./Components/LoginComponent/Personal";
 import StudentList from "./Components/LoginComponent/StudentList";
+import DeleteStudentList from "./Components/LoginComponent/DeleteStudentList"; // <-- import added
 import "./App.css";
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
           {/* Student Details */}
           <Route path="/SingleStudentDetail" element={<SingleStudentDetails />} />
           <Route path="/Students" element={<StudentList />} />
+          <Route path="/DeleteStudentList" element={<DeleteStudentList />} /> {/* <-- route added */}
 
           {/* Lost Item Routes */}
           <Route path="/LostSubmit" element={<LostItemSubmit />} />
@@ -38,6 +40,8 @@ function App() {
           <Route path="/Found-Submit" element={<FoundItemSubmission />} />
           <Route path="/Found-Submit/:id" element={<FoundItemRedirected />} />
           <Route path="/FoundReport" element={<FoundItemReport />} />
+
+          {/* Personal */}
           <Route path="/Personal" element={<Personal />} />
         </Routes>
       </BrowserRouter>

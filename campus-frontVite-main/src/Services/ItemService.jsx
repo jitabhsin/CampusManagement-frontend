@@ -18,3 +18,5 @@ export const foundItemListByUser = () => axios.get(`${BASE_URL}/lostfound`);
 
 // Students
 export const getAllStudents = () => axios.get(`${BASE_URL}/students`);
+export const deleteStudentByUsername = (username) =>
+  axios.delete(`${BASE_URL}/student/${username}`);
