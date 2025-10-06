@@ -18,7 +18,8 @@ const LostItemReport = () => {
 
   useEffect(() => {
     if (currentUser) {
-      const fetchItems = currentUser.role === "Admin" ? notFoundItemList : lostItemListByUser;
+      const fetchItems =
+        currentUser.role === "Admin" ? notFoundItemList : lostItemListByUser;
       fetchItems()
         .then((res) => setLostItems(res.data))
         .catch(() => console.error("Failed to load items"))
@@ -27,7 +28,6 @@ const LostItemReport = () => {
   }, [currentUser]);
 
   const handleFoundSubmission = (itemId) => {
-    // CHANGE: The route is "/Found-Submit/:id", not "/Found-Submit-Redirected/:id"
     navigate(`/Found-Submit/${itemId}`);
   };
 
@@ -43,49 +43,99 @@ const LostItemReport = () => {
         <div className="text-center mb-8">
           <FaSearch size={40} className="text-indigo-600 mx-auto mb-3" />
           <h1 className="text-3xl font-bold text-gray-800">Lost Item Report</h1>
-          <p className="text-gray-500 mt-2">Items that are currently reported as lost.</p>
+          <p className="text-gray-500 mt-2">
+            Items that are currently reported as lost.
+          </p>
         </div>
 
         {lostItems.length === 0 ? (
           <div className="text-center py-10">
-            <FaRegSadTear size={50} className="mx-auto text-gray-400 mb-4" />
-            <h2 className="text-xl font-semibold text-gray-700">No Lost Items Found</h2>
+            <FaRegSadTear
+              size={50}
+              className="mx-auto text-gray-400 mb-4"
+            />
+            <h2 className="text-xl font-semibold text-gray-700">
+              No Lost Items Found
+            </h2>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-100">
                 <tr>
-                  {["Item ID","Item Name","Category","Brand","Color","Location Lost","Lost Date","Reported By","Action"].map(header => (
-                    <th key={header} className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">{header}</th>
+                  {[
+                    "Item ID",
+                    "Item Name",
+                    "Category",
+                    "Brand",
+                    "Color",
+                    "Location Lost",
+                    "Lost Date",
+                    "Reported By",
+                  ].map((header) => (
+                    <th
+                      key={header}
+                      className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase"
+                    >
+                      {header}
+                    </th>
                   ))}
+
+                  {/* Show Action column only for Student */}
+                  {currentUser?.role === "Student" && (
+                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">
+                      Action
+                    </th>
+                  )}
                 </tr>
               </thead>
+
               <tbody className="bg-white divide-y divide-gray-200">
-                {lostItems.map(item => (
+                {lostItems.map((item) => (
                   <tr key={item.itemId} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.itemId}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{item.itemName}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{item.category}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{item.brand}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{item.color}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{item.location}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{item.lostDate}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{item.username}</td>
-                    <td className="px-6 py-4 text-sm font-medium">
-                      <button
-                        onClick={() => handleFoundSubmission(item.itemId)}
-                        className="bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600"
-                      >
-                        Mark as Found
-                      </button>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      {item.itemId}
                     </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {item.itemName}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {item.category}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {item.brand}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {item.color}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {item.location}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {item.lostDate}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {item.username}
+                    </td>
+
+                    {/* Show Mark as Found button only for Student */}
+                    {currentUser?.role === "Student" && (
+                      <td className="px-6 py-4 text-sm font-medium">
+                        <button
+                          onClick={() => handleFoundSubmission(item.itemId)}
+                          className="bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600"
+                        >
+                          Mark as Found
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         )}
+
         <div className="flex justify-end mt-6">
           <button
             onClick={returnBack}
