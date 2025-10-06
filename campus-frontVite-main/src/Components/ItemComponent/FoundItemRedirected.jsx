@@ -26,7 +26,7 @@ const FoundItemRedirected = () => {
     try {
       await markItemAsFound(item.itemId, foundDate);
       alert("Item successfully marked as found!");
-      navigate("/FoundReport");
+      navigate("/LostReport"); // Redirect changed here
     } catch {
       setError("Failed to mark item as found. Please try again.");
     } finally {
@@ -45,7 +45,9 @@ const FoundItemRedirected = () => {
       <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg p-8 space-y-6">
         <div className="flex flex-col items-center">
           <FaCheckCircle size={40} className="text-green-500 mb-4" />
-          <h2 className="text-3xl font-bold text-gray-800 text-center">Found Item Submission</h2>
+          <h2 className="text-3xl font-bold text-gray-800 text-center">
+            Found Item Submission
+          </h2>
           <p className="text-gray-500 mt-2 text-center">
             Confirm the details and select the date the item was found.
           </p>
@@ -55,18 +57,24 @@ const FoundItemRedirected = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {["itemId", "itemName", "category", "brand", "color", "location"].map((field) => (
-              <div key={field}>
-                <label className={labelStyles}>{field.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}</label>
-                <input
-                  type="text"
-                  name={field}
-                  value={item[field]}
-                  className={`${inputStyles} bg-gray-100 cursor-not-allowed`}
-                  readOnly
-                />
-              </div>
-            ))}
+            {["itemId", "itemName", "category", "brand", "color", "location"].map(
+              (field) => (
+                <div key={field}>
+                  <label className={labelStyles}>
+                    {field
+                      .replace(/([A-Z])/g, " $1")
+                      .replace(/^./, (str) => str.toUpperCase())}
+                  </label>
+                  <input
+                    type="text"
+                    name={field}
+                    value={item[field]}
+                    className={`${inputStyles} bg-gray-100 cursor-not-allowed`}
+                    readOnly
+                  />
+                </div>
+              )
+            )}
 
             <div className="md:col-span-2">
               <label htmlFor="foundDate" className={labelStyles}>
