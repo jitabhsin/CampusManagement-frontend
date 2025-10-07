@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllStudents, deleteStudentByUsername } from "../../Services/ItemService";
+import { getAllStudents, deleteStudentByUsername } from "../../Services/LoginService";
 
 const DeleteStudentList = () => {
   const navigate = useNavigate();
