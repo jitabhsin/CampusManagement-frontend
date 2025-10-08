@@ -69,32 +69,27 @@ const AdminMenu = () => {
           </div>
 
           {/* Users Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => toggleDropdown("users")}
-              className="flex items-center px-3 py-2 text-black font-bold hover:bg-yellow-500 rounded"
-            >
-              Users <ChevronDown className="w-4 h-4 ml-1" />
-            </button>
-            {openDropdown === "users" && (
-              <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded shadow-lg z-50 border border-gray-200">
-                <div className="py-2">
-                  <Link
-                    to="/Students"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                  >
-                    View Students
-                  </Link>
-                  <Link
-                    to="/DeleteStudentList"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                  >
-                    Delete Student
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
+<div className="relative">
+  <button
+    onClick={() => toggleDropdown("users")}
+    className="flex items-center px-3 py-2 text-black font-bold hover:bg-yellow-500 rounded"
+  >
+    Student <ChevronDown className="w-4 h-4 ml-1" />
+  </button>
+  {openDropdown === "users" && (
+    <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded shadow-lg z-50 border border-gray-200">
+      <div className="py-2">
+        <Link
+          to="/DeleteStudentList"
+          className="block px-4 py-2 hover:bg-gray-100"
+        >
+          View Student List
+        </Link>
+      </div>
+    </div>
+  )}
+</div>
+
 
           <Link
             to="/"
