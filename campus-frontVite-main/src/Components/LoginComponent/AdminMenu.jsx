@@ -41,7 +41,7 @@ const AdminMenu = () => {
       <nav className="bg-yellow-400 shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
           <div className="flex space-x-4">
-            {["Items", "Report", "Student"].map((menu) => (
+            {["Report", "Student"].map((menu) => (
               <div key={menu} className="relative">
                 <button
                   onClick={() => toggleDropdown(menu.toLowerCase())}
@@ -53,14 +53,6 @@ const AdminMenu = () => {
                 {openDropdown === menu.toLowerCase() && (
                   <div className="absolute top-full left-0 mt-1 w-52 bg-white rounded shadow-lg border border-gray-200 z-50">
                     <div className="py-2 flex flex-col">
-                      {menu === "Items" && (
-                        <Link
-                          to="/LostReport"
-                          className="block px-4 py-2 hover:bg-gray-100"
-                        >
-                          Lost Item Track
-                        </Link>
-                      )}
                       {menu === "Report" && (
                         <>
                           <Link
