@@ -16,7 +16,7 @@ const StudentMenuGoodUI = () => {
       items: [
         { name: "Lost Item Registration", href: "/LostSubmit", icon: MapPin },
         { name: "Found Item Submission", href: "/FoundSubmit", icon: CheckCircle },
-        { name: "Lost Item Track", href: "/LostReport", icon: FileText },
+        { name: "Lost Item Track", href: "/LostItemTrack", icon: FileText },
       ],
     },
     {

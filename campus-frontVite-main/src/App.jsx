@@ -12,6 +12,7 @@ import FoundItemReport from "./Components/ItemComponent/FoundItemReport";
 import Personal from "./Components/LoginComponent/Personal";
 import StudentList from "./Components/LoginComponent/StudentList";
 import DeleteStudentList from "./Components/LoginComponent/DeleteStudentList"; // <-- import added
+import LostItemTrack from "./Components/ItemComponent/LostItemTrack";
 import "./App.css";
 
 function App() {
@@ -37,9 +38,10 @@ function App() {
           <Route path="/LostReport" element={<LostItemReport />} />
 
           {/* Found Item Routes */}
-          <Route path="/FoundSubmit" element={<FoundItemSubmission />} />
+          <Route path="/Found-Submit" element={<FoundItemSubmission />} />
           <Route path="/Found-Submit/:id" element={<FoundItemRedirected />} />
           <Route path="/FoundReport" element={<FoundItemReport />} />
+         <Route path="/LostItemTrack" element={<LostItemTrack />} />
 
           {/* Personal */}
           <Route path="/Personal" element={<Personal />} />

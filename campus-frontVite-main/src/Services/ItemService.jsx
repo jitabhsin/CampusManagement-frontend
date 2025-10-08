@@ -15,3 +15,6 @@ export const notFoundItemList = () => axios.get(`${BASE_URL}/not-found`);
 export const foundItemList = () => axios.get(`${BASE_URL}/found`);
 export const lostItemListByUser = () => axios.get(`${BASE_URL}/lost`);
 export const foundItemListByUser = () => axios.get(`${BASE_URL}/lostfound`);
+// FuzzyLogic matching
+export const getMatchingFoundItems = (lostItemId, threshold = 0.8) =>
+  axios.get(`${BASE_URL}/fuzzy/lost/${lostItemId}?threshold=${threshold}`);
