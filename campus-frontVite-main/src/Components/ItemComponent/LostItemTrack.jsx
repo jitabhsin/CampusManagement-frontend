@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { lostItemListByUser, getMatchingFoundItems } from "../../Services/ItemService";
-import { FaSearch, FaTimes } from "react-icons/fa";
+import { FaSearch, FaTimes, FaArrowLeft } from "react-icons/fa";
 
 const FoundItemTile = ({ item }) => (
   <div className="bg-gray-100 rounded-lg shadow-sm p-4 flex flex-col items-center text-center hover:shadow-md transition-shadow duration-300 w-full max-w-xs">
@@ -45,7 +46,6 @@ const LostItemPanel = ({ item }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col">
-      {}
       <div className="p-4 bg-indigo-600 text-white flex justify-between items-center">
         <h3 className="text-lg font-semibold truncate">{item.itemName}</h3>
         <button
@@ -56,7 +56,6 @@ const LostItemPanel = ({ item }) => {
         </button>
       </div>
 
-      {}
       <div className="p-4 flex flex-col items-center">
         {item.imageUrl ? (
           <img
@@ -75,7 +74,6 @@ const LostItemPanel = ({ item }) => {
         <p className="text-gray-500 text-xs mt-2">Lost on: {item.lostDate}</p>
       </div>
 
-      {}
       {isExpanded && (
         <div className="p-4 bg-gray-50 border-t border-gray-300">
           {isLoading ? (
@@ -96,8 +94,8 @@ const LostItemPanel = ({ item }) => {
   );
 };
 
-
 const LostItemTrack = () => {
+  const navigate = useNavigate();
   const [lostItems, setLostItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -120,6 +118,14 @@ const LostItemTrack = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-8">
+      {/* Return Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-indigo-700 font-semibold mb-6 hover:text-indigo-900 transition-colors"
+      >
+        <FaArrowLeft /> Return
+      </button>
+
       <h2 className="text-4xl font-extrabold mb-10 text-indigo-800 text-center">Track Your Lost Items</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {lostItems.map((item) => (
