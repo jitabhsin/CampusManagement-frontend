@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react";
 import { lostItemListByUser, getMatchingFoundItems } from "../../Services/ItemService";
 import { FaSearch, FaTimes } from "react-icons/fa";
 
-// ----------------------------
-// Found Item Tile Component
-// ----------------------------
 const FoundItemTile = ({ item }) => (
   <div className="bg-gray-100 rounded-lg shadow-sm p-4 flex flex-col items-center text-center hover:shadow-md transition-shadow duration-300 w-full max-w-xs">
     {item.imageUrl ? (
@@ -24,9 +21,6 @@ const FoundItemTile = ({ item }) => (
   </div>
 );
 
-// ----------------------------
-// Lost Item Panel Component
-// ----------------------------
 const LostItemPanel = ({ item }) => {
   const [matches, setMatches] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +45,7 @@ const LostItemPanel = ({ item }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col">
-      {/* Header Section */}
+      {}
       <div className="p-4 bg-indigo-600 text-white flex justify-between items-center">
         <h3 className="text-lg font-semibold truncate">{item.itemName}</h3>
         <button
@@ -62,7 +56,7 @@ const LostItemPanel = ({ item }) => {
         </button>
       </div>
 
-      {/* Details Section */}
+      {}
       <div className="p-4 flex flex-col items-center">
         {item.imageUrl ? (
           <img
@@ -81,7 +75,7 @@ const LostItemPanel = ({ item }) => {
         <p className="text-gray-500 text-xs mt-2">Lost on: {item.lostDate}</p>
       </div>
 
-      {/* Matches Section */}
+      {}
       {isExpanded && (
         <div className="p-4 bg-gray-50 border-t border-gray-300">
           {isLoading ? (
@@ -102,9 +96,7 @@ const LostItemPanel = ({ item }) => {
   );
 };
 
-// ----------------------------
-// Main Component
-// ----------------------------
+
 const LostItemTrack = () => {
   const [lostItems, setLostItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
