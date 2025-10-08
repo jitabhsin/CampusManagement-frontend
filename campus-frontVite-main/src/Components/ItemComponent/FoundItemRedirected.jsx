@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getItemById, markItemAsFound } from "../../Services/ItemService";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaArrowLeft } from "react-icons/fa";
 
 const FoundItemRedirected = () => {
   const { id } = useParams();
@@ -41,28 +41,37 @@ const FoundItemRedirected = () => {
   const labelStyles = "block text-sm font-medium text-gray-700 mb-1";
 
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-lg p-6 flex flex-row flex-nowrap gap-6 w-full max-w-6xl">
+    <div className="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+      <div className="bg-white rounded-2xl shadow-xl p-8 flex flex-col lg:flex-row gap-8 w-full max-w-7xl">
         {/* Left: Icon + Title */}
-        <div className="flex flex-col items-center justify-start flex-shrink-0 w-1/4">
-          <FaCheckCircle size={40} className="text-green-500 mb-2" />
-          <h2 className="text-2xl font-bold text-gray-800 text-center">
+        <div className="flex flex-col items-center lg:items-start justify-start lg:w-1/4 text-center lg:text-left">
+          <FaCheckCircle size={48} className="text-green-500 mb-4" />
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">
             Found Item Submission
           </h2>
-          <p className="text-gray-500 mt-1 text-center">
-            Confirm details & select the date the item was found.
+          <p className="text-gray-500 mb-4">
+            Review the item details and select the date it was found.
           </p>
         </div>
 
         {/* Center: Form */}
-        <div className="flex-1 flex flex-col gap-4">
-          {error && <p className="text-red-500 text-center">{error}</p>}
+        <div className="flex-1 flex flex-col gap-6">
+          {/* Return Button */}
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-indigo-600 font-medium hover:text-indigo-800 mb-2"
+          >
+            <FaArrowLeft /> Return
+          </button>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-row gap-4 flex-wrap">
+          {error && <p className="text-red-500 text-center lg:text-left">{error}</p>}
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            <h3 className="text-xl font-semibold text-gray-700">Item Details</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {["itemId", "itemName", "category", "brand", "color", "location"].map(
                 (field) => (
-                  <div key={field} className="flex-1 min-w-[150px]">
+                  <div key={field}>
                     <label className={labelStyles}>
                       {field
                         .replace(/([A-Z])/g, " $1")
@@ -79,7 +88,7 @@ const FoundItemRedirected = () => {
                 )
               )}
 
-              <div className="flex-1 min-w-[150px]">
+              <div>
                 <label htmlFor="foundDate" className={labelStyles}>
                   Found Date *
                 </label>
@@ -97,7 +106,7 @@ const FoundItemRedirected = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50 transition mt-2"
+              className="w-full lg:w-1/3 bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50 transition self-center"
             >
               {isSubmitting ? "Submitting..." : "Mark as Found"}
             </button>
@@ -105,16 +114,16 @@ const FoundItemRedirected = () => {
         </div>
 
         {/* Right: Image */}
-        <div className="flex-shrink-0 w-1/3 flex items-center justify-center">
+        <div className="flex-shrink-0 lg:w-1/4 flex items-center justify-center">
           {item.imageUrl ? (
             <img
-              src={item.imageUrl} // API should return this
+              src={item.imageUrl}
               alt="Item"
               className="w-64 h-64 object-cover rounded-xl shadow-md"
             />
           ) : (
             <div className="w-64 h-64 bg-gray-200 flex items-center justify-center rounded-xl shadow-md">
-              <p className="text-gray-500">No image available</p>
+              <p className="text-gray-500 text-center">No image available</p>
             </div>
           )}
         </div>
