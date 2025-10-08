@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { notFoundItemList, lostItemListByUser } from "../../Services/ItemService";
 import { getUserDetails } from "../../Services/LoginService";
-import { FaSearch, FaRegSadTear } from "react-icons/fa";
+import { FaSearch, FaRegSadTear, FaTimes } from "react-icons/fa";
 
 const LostItemReport = () => {
   const [lostItems, setLostItems] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState(null); // for modal
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,10 +51,7 @@ const LostItemReport = () => {
 
         {lostItems.length === 0 ? (
           <div className="text-center py-10">
-            <FaRegSadTear
-              size={50}
-              className="mx-auto text-gray-400 mb-4"
-            />
+            <FaRegSadTear size={50} className="mx-auto text-gray-400 mb-4" />
             <h2 className="text-xl font-semibold text-gray-700">
               No Lost Items Found
             </h2>
@@ -81,7 +79,6 @@ const LostItemReport = () => {
                     </th>
                   ))}
 
-                  {/* Show Action column only for Student */}
                   {currentUser?.role === "Student" && (
                     <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">
                       Action
@@ -92,7 +89,11 @@ const LostItemReport = () => {
 
               <tbody className="bg-white divide-y divide-gray-200">
                 {lostItems.map((item) => (
-                  <tr key={item.itemId} className="hover:bg-gray-50">
+                  <tr
+                    key={item.itemId}
+                    className="hover:bg-indigo-50 cursor-pointer transition"
+                    onClick={() => setSelectedItem(item)} // open modal
+                  >
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                       {item.itemId}
                     </td>
@@ -118,9 +119,11 @@ const LostItemReport = () => {
                       {item.username}
                     </td>
 
-                    {/* Show Mark as Found button only for Student */}
                     {currentUser?.role === "Student" && (
-                      <td className="px-6 py-4 text-sm font-medium">
+                      <td
+                        className="px-6 py-4 text-sm font-medium"
+                        onClick={(e) => e.stopPropagation()} // prevent row click from triggering
+                      >
                         <button
                           onClick={() => handleFoundSubmission(item.itemId)}
                           className="bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600"
@@ -145,6 +148,47 @@ const LostItemReport = () => {
           </button>
         </div>
       </div>
+
+{/* Popup Modal */}
+{selectedItem && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+    <div className="bg-white rounded-lg shadow-xl max-w-lg w-full relative overflow-y-auto">
+      <button
+        onClick={() => setSelectedItem(null)}
+        className="absolute top-3 right-3 text-gray-600 hover:text-gray-800"
+      >
+        <FaTimes size={20} />
+      </button>
+
+      <div className="flex flex-col items-center space-y-4 p-6">
+        {/* Image section only if it exists */}
+        {selectedItem.imageUrl && (
+          <img
+            src={selectedItem.imageUrl}
+            alt={selectedItem.itemName}
+            className="w-40 h-40 object-cover rounded-md shadow-md"
+          />
+        )}
+
+        <h2 className="text-2xl font-bold text-gray-800 text-center">
+          {selectedItem.itemName}
+        </h2>
+
+        <div className="w-full text-left space-y-2 text-gray-700">
+          <p><span className="font-semibold">Item ID:</span> {selectedItem.itemId}</p>
+          <p><span className="font-semibold">Category:</span> {selectedItem.category}</p>
+          <p><span className="font-semibold">Brand:</span> {selectedItem.brand}</p>
+          <p><span className="font-semibold">Color:</span> {selectedItem.color}</p>
+          <p><span className="font-semibold">Location Lost:</span> {selectedItem.location}</p>
+          <p><span className="font-semibold">Lost Date:</span> {selectedItem.lostDate}</p>
+          <p><span className="font-semibold">Reported By:</span> {selectedItem.username}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+      )}
     </div>
   );
 };

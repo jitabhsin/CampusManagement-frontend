@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaBox } from "react-icons/fa6";
+import { FaBox, FaTimes } from "react-icons/fa";
 import { foundItemList, foundItemListByUser } from "../../Services/ItemService";
 import { getUserDetails } from "../../Services/LoginService";
 
@@ -9,12 +9,11 @@ const FoundItemReport = () => {
   const [itemList, setItemList] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState(null); // for modal
 
   useEffect(() => {
     getUserDetails()
-      .then((response) => {
-        setCurrentUser(response.data);
-      })
+      .then((response) => setCurrentUser(response.data))
       .catch((error) => {
         console.error("Error fetching user details:", error);
         setLoading(false);
@@ -23,28 +22,17 @@ const FoundItemReport = () => {
 
   useEffect(() => {
     if (currentUser) {
-      if (currentUser.role === "Admin") {
-        foundItemList()
-          .then((response) => setItemList(response.data))
-          .catch((error) => console.error("Error fetching all found items:", error))
-          .finally(() => setLoading(false));
-      } else if (currentUser.role === "Student") {
-        foundItemListByUser()
-          .then((response) => setItemList(response.data))
-          .catch((error) => console.error("Error fetching user's found items:", error))
-          .finally(() => setLoading(false));
-      } else {
-        setLoading(false);
-      }
+      const fetchItems =
+        currentUser.role === "Admin" ? foundItemList : foundItemListByUser;
+      fetchItems()
+        .then((response) => setItemList(response.data))
+        .catch((error) => console.error("Error fetching found items:", error))
+        .finally(() => setLoading(false));
     }
   }, [currentUser]);
 
   const returnBack = () => {
-    if (currentUser?.role === "Admin") {
-      navigate("/AdminMenu");
-    } else {
-      navigate("/StudentMenu");
-    }
+    navigate(currentUser?.role === "Admin" ? "/AdminMenu" : "/StudentMenu");
   };
 
   if (loading) {
@@ -69,22 +57,22 @@ const FoundItemReport = () => {
           <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
             <thead className="bg-indigo-600 text-white">
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Item Id</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Item Name</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Category</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Color</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Brand</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Location</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Found Date</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Entry Date</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">User</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold">Email</th>
+                {[
+                  "Item Id", "Item Name", "Category", "Color", "Brand",
+                  "Location", "Found Date", "Entry Date", "User", "Email"
+                ].map((header) => (
+                  <th key={header} className="px-4 py-3 text-left text-sm font-semibold">{header}</th>
+                ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 text-sm text-gray-700">
               {itemList.length > 0 ? (
                 itemList.map((item) => (
-                  <tr key={item.itemId} className="hover:bg-gray-50 transition">
+                  <tr
+                    key={item.itemId}
+                    className="hover:bg-gray-50 cursor-pointer transition"
+                    onClick={() => setSelectedItem(item)} // open modal
+                  >
                     <td className="px-4 py-3">{item.itemId}</td>
                     <td className="px-4 py-3">{item.itemName}</td>
                     <td className="px-4 py-3">{item.category}</td>
@@ -117,6 +105,41 @@ const FoundItemReport = () => {
           </button>
         </div>
       </div>
+
+      {/* Popup Modal */}
+      {selectedItem && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-11/12 md:w-1/2 relative">
+            <button
+              onClick={() => setSelectedItem(null)}
+              className="absolute top-3 right-3 text-gray-600 hover:text-gray-800"
+            >
+              <FaTimes size={20} />
+            </button>
+            <div className="flex flex-col items-center space-y-4">
+              <img
+                src={selectedItem.imageUrl || "https://via.placeholder.com/200"}
+                alt={selectedItem.itemName}
+                className="w-40 h-40 object-cover rounded-md shadow-md"
+              />
+              <h2 className="text-2xl font-bold text-gray-800">
+                {selectedItem.itemName}
+              </h2>
+              <div className="w-full text-left space-y-2 text-gray-700">
+                <p><span className="font-semibold">Item ID:</span> {selectedItem.itemId}</p>
+                <p><span className="font-semibold">Category:</span> {selectedItem.category}</p>
+                <p><span className="font-semibold">Brand:</span> {selectedItem.brand}</p>
+                <p><span className="font-semibold">Color:</span> {selectedItem.color}</p>
+                <p><span className="font-semibold">Location:</span> {selectedItem.location}</p>
+                <p><span className="font-semibold">Found Date:</span> {selectedItem.foundDate}</p>
+                <p><span className="font-semibold">Entry Date:</span> {selectedItem.entryDate}</p>
+                <p><span className="font-semibold">Reported By:</span> {selectedItem.username}</p>
+                <p><span className="font-semibold">Email:</span> {selectedItem.userEmail}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
