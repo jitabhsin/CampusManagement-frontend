@@ -7,12 +7,12 @@ import SingleStudentDetails from "./Components/LoginComponent/SingleStudentDetai
 import LostItemSubmit from "./Components/ItemComponent/LostItemSubmit";
 import LostItemReport from "./Components/ItemComponent/LostItemReport";
 import FoundItemSubmission from "./Components/ItemComponent/FoundItemSubmission";
-import FoundItemRedirected from "./Components/ItemComponent/FoundItemRedirected";
 import FoundItemReport from "./Components/ItemComponent/FoundItemReport";
 import Personal from "./Components/LoginComponent/Personal";
 import StudentList from "./Components/LoginComponent/StudentList";
-import DeleteStudentList from "./Components/LoginComponent/DeleteStudentList"; // <-- import added
+import DeleteStudentList from "./Components/LoginComponent/DeleteStudentList";
 import LostItemTrack from "./Components/ItemComponent/LostItemTrack";
+import MarkAsFound from "./Components/ItemComponent/MarkAsFound";
 import "./App.css";
 
 function App() {
@@ -20,30 +20,32 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          {/* Authentication & Registration */}
+          {/* Authentication */}
           <Route path="/" element={<LoginPage />} />
           <Route path="/Register" element={<SigninPage />} />
 
-          {/* Admin & Student Menus */}
+          {/* Admin and Student Menus */}
           <Route path="/AdminMenu" element={<AdminMenu />} />
           <Route path="/StudentMenu" element={<StudentMenu />} />
 
-          {/* Student Details */}
+          {/* Student Management */}
           <Route path="/SingleStudentDetail" element={<SingleStudentDetails />} />
           <Route path="/Students" element={<StudentList />} />
-          <Route path="/DeleteStudentList" element={<DeleteStudentList />} /> {/* <-- route added */}
+          <Route path="/DeleteStudentList" element={<DeleteStudentList />} />
 
           {/* Lost Item Routes */}
           <Route path="/LostSubmit" element={<LostItemSubmit />} />
           <Route path="/LostReport" element={<LostItemReport />} />
+          <Route path="/LostItemTrack" element={<LostItemTrack />} />
 
           {/* Found Item Routes */}
           <Route path="/FoundSubmit" element={<FoundItemSubmission />} />
-          <Route path="/Found-Submit/:id" element={<FoundItemRedirected />} />
           <Route path="/FoundReport" element={<FoundItemReport />} />
-         <Route path="/LostItemTrack" element={<LostItemTrack />} />
 
-          {/* Personal */}
+          {/* Mark as Found Route */}
+          <Route path="/mark-found/:id" element={<MarkAsFound />} />
+
+          {/* Personal Info */}
           <Route path="/Personal" element={<Personal />} />
         </Routes>
       </BrowserRouter>

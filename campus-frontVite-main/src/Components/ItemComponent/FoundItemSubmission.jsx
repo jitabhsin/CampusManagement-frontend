@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaCloudUploadAlt } from "react-icons/fa";
-// Import both itemIdGenerator AND foundItemSubmission
-import { itemIdGenerator, foundItemSubmission } from "../../Services/ItemService"; 
+import { foundItemSubmission } from "../../Services/ItemService";
 import { getUserDetails } from "../../Services/LoginService";
 import axios from "axios";
 
@@ -11,17 +10,14 @@ const FoundItemSubmission = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [newId, setNewId] = useState("");
   const [campusUser, setCampusUser] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
 
   const today = new Date().toISOString().slice(0, 10);
   const [foundDate, setFoundDate] = useState(today);
-  const [entryDate, setEntryDate] = useState(today);
 
   const [item, setItem] = useState({
-    itemId: 0,
     username: "",
     userEmail: "",
     itemName: "",
@@ -32,9 +28,7 @@ const FoundItemSubmission = () => {
     imageUrl: "",
   });
 
-  // Initialize IDs and user details
   useEffect(() => {
-    itemIdGenerator().then((response) => setNewId(response.data));
     getUserDetails().then((response) => {
       const userData = response.data;
       setCampusUser(userData);
@@ -73,7 +67,6 @@ const FoundItemSubmission = () => {
     if (input) input.value = "";
   };
 
-  // Upload image to Cloudinary
   const uploadImgToCloudinary = async () => {
     if (!imageFile) return null;
     setIsUploading(true);
@@ -96,37 +89,31 @@ const FoundItemSubmission = () => {
     }
   };
 
-  // Form submission - THIS IS THE CORRECTED PART
   const foundItemFormSubmit = async () => {
     let imageUrl = null;
     if (imageFile) {
       const uploadedUrl = await uploadImgToCloudinary();
       if (uploadedUrl) imageUrl = uploadedUrl;
-      else return; // Stop submission if upload fails
+      else return; 
     }
 
     const finalItem = {
       ...item,
-      itemId: newId,
       username: campusUser.username,
       userEmail: campusUser.email,
       foundDate,
-      entryDate,
-      lostDate: null,
       imageUrl,
     };
 
-    // Use the imported service function instead of a direct axios call
     return foundItemSubmission(finalItem).then(() => {
         alert("Found Item Submitted Successfully!");
         navigate(campusUser?.role === "Admin" ? "/AdminMenu" : "/StudentMenu");
-    }).catch((err) => {
+      }).catch((err) => {
         console.error("Submission failed:", err.response?.data || err);
         alert("Submission failed. Please try again.");
-    });
+      });
   };
 
-  // Validation
   const handleValidation = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -144,10 +131,6 @@ const FoundItemSubmission = () => {
       tempErrors.foundDate = "Found Date is required";
       isValid = false;
     }
-    if (!entryDate) {
-      tempErrors.entryDate = "Entry Date is required";
-      isValid = false;
-    }
 
     setErrors(tempErrors);
     if (!isValid) {
@@ -158,7 +141,6 @@ const FoundItemSubmission = () => {
     foundItemFormSubmit().finally(() => setIsSubmitting(false));
   };
 
-  // Styles
   const inputStyles =
     "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent";
   const labelStyles = "block text-sm font-medium text-gray-700 mb-1";
@@ -168,103 +150,62 @@ const FoundItemSubmission = () => {
     <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4 overflow-x-auto">
       <form
         onSubmit={handleValidation}
-        className="flex flex-row gap-6 w-max bg-white p-6 rounded-xl shadow-lg"
+        className="flex flex-col md:flex-row gap-6 w-full max-w-4xl bg-white p-6 rounded-xl shadow-lg"
       >
-        {/* User & Dates */}
-        <div className="flex-1 min-w-[280px] bg-gray-50 p-4 rounded-lg shadow-sm space-y-4">
-          <h3 className="text-lg font-semibold text-indigo-600 mb-4">User Details</h3>
-          <div>
-            <label className={labelStyles}>Generated Item ID</label>
-            <input className={`${inputStyles} bg-gray-100`} value={newId} readOnly />
-          </div>
-          <div>
-            <label className={labelStyles}>User Name</label>
-            <input className={`${inputStyles} bg-gray-100`} value={item.username} readOnly />
-          </div>
-          <div>
-            <label className={labelStyles}>User Email</label>
-            <input className={`${inputStyles} bg-gray-100`} value={item.userEmail} readOnly />
-          </div>
-          <div>
-            <label className={labelStyles}>Found Date *</label>
-            <input type="date" className={inputStyles} value={foundDate} onChange={(e) => setFoundDate(e.target.value)} />
-            {errors.foundDate && <p className={errorStyles}>{errors.foundDate}</p>}
-          </div>
-          <div>
-            <label className={labelStyles}>Entry Date *</label>
-            <input type="date" className={inputStyles} value={entryDate} onChange={(e) => setEntryDate(e.target.value)} />
-            {errors.entryDate && <p className={errorStyles}>{errors.entryDate}</p>}
-          </div>
-        </div>
-
-        {/* Item Details */}
-        <div className="flex-1 min-w-[280px] bg-gray-50 p-4 rounded-lg shadow-sm space-y-4">
-          <h3 className="text-lg font-semibold text-indigo-600 mb-4">Item Details</h3>
-          {["itemName", "category", "color", "brand", "location"].map((field) => (
-            <div key={field}>
-              <label className={labelStyles}>{`${field.charAt(0).toUpperCase() + field.slice(1)} *`}</label>
-              <input name={field} className={inputStyles} value={item[field]} onChange={onChangeHandler} />
-              {errors[field] && <p className={errorStyles}>{errors[field]}</p>}
+        <div className="flex-1 space-y-4">
+            <h3 className="text-lg font-semibold text-indigo-600 mb-4">User & Item Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className={labelStyles}>User Name</label>
+                    <input className={`${inputStyles} bg-gray-100`} value={item.username} readOnly />
+                </div>
+                <div>
+                    <label className={labelStyles}>User Email</label>
+                    <input className={`${inputStyles} bg-gray-100`} value={item.userEmail} readOnly />
+                </div>
+                <div>
+                    <label className={labelStyles}>Found Date *</label>
+                    <input type="date" className={inputStyles} value={foundDate} onChange={(e) => setFoundDate(e.target.value)} />
+                    {errors.foundDate && <p className={errorStyles}>{errors.foundDate}</p>}
+                </div>
+                {["itemName", "category", "color", "brand", "location"].map((field) => (
+                    <div key={field}>
+                        <label className={labelStyles}>{`${field.charAt(0).toUpperCase() + field.slice(1)} *`}</label>
+                        <input name={field} className={inputStyles} value={item[field]} onChange={onChangeHandler} />
+                        {errors[field] && <p className={errorStyles}>{errors[field]}</p>}
+                    </div>
+                ))}
             </div>
-          ))}
         </div>
-
-        {/* Image Upload */}
-        <div className="flex-1 min-w-[280px] bg-gray-50 p-4 rounded-lg shadow-sm flex flex-col items-center justify-center">
-          <h3 className="text-lg font-semibold text-indigo-600 mb-4">Upload Image</h3>
-          <div
-            className="border-2 border-dashed border-gray-300 p-4 w-full text-center rounded-md bg-white hover:bg-gray-100 transition cursor-pointer"
-            onClick={() => document.getElementById("image-upload-input").click()}
-          >
-            <FaCloudUploadAlt className="text-indigo-500 mx-auto mb-2" size={32} />
-            <p>Click to upload image</p>
-            <input
-              id="image-upload-input"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-            />
-            {previewImage && (
-              <div className="relative">
-                <img src={previewImage} alt="Preview" className="mt-4 mx-auto w-48 h-48 object-cover rounded-md shadow-md" />
-                <button
-                  type="button"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeImage(); }}
-                  className="absolute top-1 right-1 bg-red-500 text-white px-2 py-1 rounded text-sm"
-                >
-                  X
+        <div className="w-full md:w-px bg-gray-200 mx-4"></div>
+        <div className="flex-1 flex flex-col items-center justify-between space-y-4">
+            <div>
+                <h3 className="text-lg font-semibold text-indigo-600 mb-4">Upload Image</h3>
+                <div className="border-2 border-dashed border-gray-300 p-4 w-full text-center rounded-md bg-white hover:bg-gray-100 transition cursor-pointer" onClick={() => document.getElementById("image-upload-input").click()}>
+                    <FaCloudUploadAlt className="text-indigo-500 mx-auto mb-2" size={32} />
+                    <p>Click to upload image</p>
+                    <input id="image-upload-input" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                    {previewImage && (
+                        <div className="relative mt-4">
+                            <img src={previewImage} alt="Preview" className="mx-auto w-48 h-48 object-cover rounded-md shadow-md" />
+                            <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeImage(); }} className="absolute top-1 right-1 bg-red-500 text-white px-2 py-1 rounded text-sm">X</button>
+                        </div>
+                    )}
+                    {errors.image && <p className={errorStyles}>{errors.image}</p>}
+                </div>
+            </div>
+            <div className="flex w-full gap-4">
+                <button type="button" onClick={() => navigate(campusUser?.role === "Admin" ? "/AdminMenu" : "/StudentMenu")} className="w-full bg-gray-500 text-white font-bold py-3 rounded-md hover:bg-gray-600 transition">
+                    Return
                 </button>
-              </div>
-            )}
-            {errors.image && <p className={errorStyles}>{errors.image}</p>}
-          </div>
+                <button type="submit" disabled={isSubmitting || isUploading} className="w-full bg-indigo-600 text-white font-bold py-3 rounded-md hover:bg-indigo-700 disabled:opacity-50 transition">
+                    {isUploading ? "Uploading..." : isSubmitting ? "Submitting..." : "Submit Found Item"}
+                </button>
+            </div>
         </div>
-
-        {/* Buttons */}
-        <div className="flex flex-col justify-end gap-4 mt-4">
-          <button
-            type="button"
-            onClick={() => navigate(campusUser?.role === "Admin" ? "/AdminMenu" : "/StudentMenu")}
-            className="w-40 bg-gray-500 text-white font-bold py-3 rounded-md hover:bg-gray-600 transition"
-          >
-            Return
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting || isUploading}
-            className="w-40 bg-indigo-600 text-white font-bold py-3 rounded-md hover:bg-indigo-700 disabled:opacity-50 transition"
-          >
-            {isUploading
-              ? "Uploading Image..."
-              : isSubmitting
-              ? "Submitting..."
-              : "Submit Found Item"}
-          </button>
-        </div>
-      </form>
+    </form>
     </div>
   );
 };
 
-export default FoundItemSubmission; 
+export default FoundItemSubmission;

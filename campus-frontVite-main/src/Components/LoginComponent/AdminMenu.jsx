@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getAllStudents } from "../../Services/LoginService";
-import { notFoundItemList, foundItemList } from "../../Services/ItemService";
+import { getAllLostItems, getAllFoundItems } from "../../Services/ItemService";
 
 const AdminMenu = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -16,8 +16,8 @@ const AdminMenu = () => {
       try {
         const [usersResponse, lostResponse, foundResponse] = await Promise.all([
           getAllStudents(),
-          notFoundItemList(),
-          foundItemList(),
+          getAllLostItems(),
+          getAllFoundItems(),
         ]);
         setStats({
           totalUsers: usersResponse.data.length,
@@ -37,7 +37,6 @@ const AdminMenu = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation Bar */}
       <nav className="bg-yellow-400 shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
           <div className="flex space-x-4">
@@ -49,33 +48,17 @@ const AdminMenu = () => {
                 >
                   {menu} ▼
                 </button>
-
                 {openDropdown === menu.toLowerCase() && (
                   <div className="absolute top-full left-0 mt-1 w-52 bg-white rounded shadow-lg border border-gray-200 z-50">
                     <div className="py-2 flex flex-col">
                       {menu === "Report" && (
                         <>
-                          <Link
-                            to="/LostReport"
-                            className="block px-4 py-2 hover:bg-gray-100"
-                          >
-                            Lost Item Report
-                          </Link>
-                          <Link
-                            to="/FoundReport"
-                            className="block px-4 py-2 hover:bg-gray-100"
-                          >
-                            Found Item Report
-                          </Link>
+                          <Link to="/LostReport" className="block px-4 py-2 hover:bg-gray-100">Lost Item Report</Link>
+                          <Link to="/FoundReport" className="block px-4 py-2 hover:bg-gray-100">Found Item Report</Link>
                         </>
                       )}
                       {menu === "Student" && (
-                        <Link
-                          to="/DeleteStudentList"
-                          className="block px-4 py-2 hover:bg-gray-100"
-                        >
-                          View Student List
-                        </Link>
+                        <Link to="/DeleteStudentList" className="block px-4 py-2 hover:bg-gray-100">View Student List</Link>
                       )}
                     </div>
                   </div>
@@ -83,41 +66,30 @@ const AdminMenu = () => {
               </div>
             ))}
           </div>
-
-          <Link
-            to="/"
-            className="px-4 py-2 bg-red-500 text-white font-bold hover:bg-red-600 rounded transition"
-          >
+          <Link to="/" className="px-4 py-2 bg-red-500 text-white font-bold hover:bg-red-600 rounded transition">
             Logout
           </Link>
         </div>
       </nav>
 
-      {/* Header */}
       <header className="text-center mt-10">
         <h1 className="text-5xl font-bold text-green-600 underline italic">
           Lost & Found Admin Menu
         </h1>
       </header>
 
-      {/* Stats Dashboard */}
       <section className="max-w-6xl mx-auto mt-10 px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Total Users */}
           <div className="bg-blue-50 p-6 rounded-xl shadow hover:scale-105 transition transform flex flex-col items-center">
             <span className="text-5xl mb-3">👥</span>
             <p className="text-lg font-medium text-gray-700 text-center">Total Users</p>
             <p className="text-4xl font-bold text-blue-600 text-center">{stats.totalUsers}</p>
           </div>
-
-          {/* Lost Submissions */}
           <div className="bg-red-50 p-6 rounded-xl shadow hover:scale-105 transition transform flex flex-col items-center">
             <span className="text-5xl mb-3">❌</span>
             <p className="text-lg font-medium text-gray-700 text-center">Lost Submissions</p>
             <p className="text-4xl font-bold text-red-600 text-center">{stats.totalLost}</p>
           </div>
-
-          {/* Found Submissions */}
           <div className="bg-green-50 p-6 rounded-xl shadow hover:scale-105 transition transform flex flex-col items-center">
             <span className="text-5xl mb-3">✅</span>
             <p className="text-lg font-medium text-gray-700 text-center">Found Submissions</p>

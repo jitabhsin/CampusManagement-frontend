@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaBoxOpen, FaCloudUploadAlt } from "react-icons/fa";
-import { lostItemSubmission, itemIdGenerator } from "../../Services/ItemService";
+import { lostItemSubmission } from "../../Services/ItemService";
 import { getUserDetails } from "../../Services/LoginService";
 import axios from "axios";
 
@@ -12,13 +12,11 @@ const LostItemSubmit = () => {
   let navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [newId, setNewId] = useState("");
   const [campusUser, setCampusUser] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const [item, setItem] = useState({
-    itemId: 0,
     username: "",
     userEmail: "",
     itemName: "",
@@ -31,11 +29,8 @@ const LostItemSubmit = () => {
 
   const today = new Date().toISOString().slice(0, 10);
   const [ldate, setLdate] = useState(today);
-  const [edate, setEdate] = useState(today);
 
   useEffect(() => {
-    itemIdGenerator().then((response) => setNewId(response.data));
-
     getUserDetails().then((response) => {
       const userData = response.data;
       setCampusUser(userData);
@@ -113,21 +108,15 @@ const LostItemSubmit = () => {
 
     const finalItem = {
       ...item,
-      itemId: newId,
       username: campusUser.username,
       userEmail: campusUser.email,
       lostDate: ldate,
-      entryDate: edate,
       imageUrl: finalImageUrl,
     };
 
     return lostItemSubmission(finalItem).then(() => {
       alert("Lost Item Submitted Successfully!");
-      if (campusUser?.role === "Admin") {
-        navigate("/AdminMenu");
-      } else {
-        navigate("/StudentMenu");
-      }
+      navigate(campusUser?.role === "Admin" ? "/AdminMenu" : "/StudentMenu");
     });
   };
 
@@ -141,30 +130,13 @@ const LostItemSubmit = () => {
       tempErrors.lostDate = "Lost Date is required";
       isValid = false;
     }
-    if (!edate) {
-      tempErrors.entryDate = "Entry Date is required";
-      isValid = false;
-    }
-    if (!String(item.itemName || "").trim()) {
-      tempErrors.itemName = "Item Name is required";
-      isValid = false;
-    }
-    if (!String(item.location || "").trim()) {
-      tempErrors.location = "Location is required";
-      isValid = false;
-    }
-    if (!String(item.category || "").trim()) {
-      tempErrors.category = "Item Category is required";
-      isValid = false;
-    }
-    if (!String(item.brand || "").trim()) {
-      tempErrors.brand = "Item Brand is required";
-      isValid = false;
-    }
-    if (!String(item.color || "").trim()) {
-      tempErrors.color = "Item Color is required";
-      isValid = false;
-    }
+    const requiredFields = ["itemName", "location", "category", "brand", "color"];
+    requiredFields.forEach(field => {
+      if (!String(item[field] || "").trim()) {
+        tempErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
+        isValid = false;
+      }
+    });
 
     setErrors(tempErrors);
     if (!isValid) {
@@ -184,11 +156,7 @@ const LostItemSubmit = () => {
   };
 
   const returnBack = () => {
-    if (campusUser?.role === "Admin") {
-      navigate("/AdminMenu");
-    } else {
-      navigate("/StudentMenu");
-    }
+    navigate(campusUser?.role === "Admin" ? "/AdminMenu" : "/StudentMenu");
   };
 
   const inputStyles =
@@ -199,7 +167,6 @@ const LostItemSubmit = () => {
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4 overflow-x-auto">
       <div className="flex space-x-8 w-max bg-white rounded-xl shadow-lg p-8">
-        {/* Left Section */}
         <div className="flex flex-col justify-center items-center min-w-[400px] space-y-6">
           <div className="flex items-center justify-center w-20 h-20 bg-indigo-100 rounded-full">
             <FaBoxOpen size={40} className="text-indigo-600" />
@@ -210,16 +177,7 @@ const LostItemSubmit = () => {
           <p className="text-gray-500 text-center">
             Report an item you have lost.
           </p>
-
           <div className="w-full space-y-4">
-            <div>
-              <label className={labelStyles}>Generated Item ID</label>
-              <input
-                className={`${inputStyles} bg-gray-100 cursor-not-allowed`}
-                value={newId}
-                readOnly
-              />
-            </div>
             <div>
               <label className={labelStyles}>User Name</label>
               <input
@@ -249,167 +207,54 @@ const LostItemSubmit = () => {
               />
               {errors.lostDate && <p className={errorStyles}>{errors.lostDate}</p>}
             </div>
-            <div>
-              <label htmlFor="entryDate" className={labelStyles}>
-                Select Entry Date *
-              </label>
-              <input
-                id="entryDate"
-                type="date"
-                className={inputStyles}
-                value={edate}
-                onChange={(e) => setEdate(e.target.value)}
-              />
-              {errors.entryDate && <p className={errorStyles}>{errors.entryDate}</p>}
-            </div>
           </div>
         </div>
-
-        {/* Right Section */}
         <form
           onSubmit={handleValidation}
           className="flex flex-col min-w-[500px] space-y-6"
         >
           <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="itemName" className={labelStyles}>
-                Item Name *
-              </label>
-              <input
-                id="itemName"
-                name="itemName"
-                className={inputStyles}
-                value={item.itemName}
-                onChange={onChangeHandler}
-              />
-              {errors.itemName && <p className={errorStyles}>{errors.itemName}</p>}
-            </div>
-            <div>
-              <label htmlFor="category" className={labelStyles}>
-                Category *
-              </label>
-              <input
-                id="category"
-                name="category"
-                className={inputStyles}
-                value={item.category}
-                onChange={onChangeHandler}
-              />
-              {errors.category && <p className={errorStyles}>{errors.category}</p>}
-            </div>
-            <div>
-              <label htmlFor="color" className={labelStyles}>
-                Color *
-              </label>
-              <input
-                id="color"
-                name="color"
-                className={inputStyles}
-                value={item.color}
-                onChange={onChangeHandler}
-              />
-              {errors.color && <p className={errorStyles}>{errors.color}</p>}
-            </div>
-            <div>
-              <label htmlFor="brand" className={labelStyles}>
-                Brand *
-              </label>
-              <input
-                id="brand"
-                name="brand"
-                className={inputStyles}
-                value={item.brand}
-                onChange={onChangeHandler}
-              />
-              {errors.brand && <p className={errorStyles}>{errors.brand}</p>}
-            </div>
-            <div className="col-span-2">
-              <label htmlFor="location" className={labelStyles}>
-                Location Where it was Lost *
-              </label>
-              <input
-                id="location"
-                name="location"
-                className={inputStyles}
-                value={item.location}
-                onChange={onChangeHandler}
-              />
-              {errors.location && <p className={errorStyles}>{errors.location}</p>}
-            </div>
+             {/* Form fields for itemName, category, color, brand, location */}
+             {Object.keys(item).filter(k => ["itemName", "category", "color", "brand", "location"].includes(k)).map(field => (
+                <div key={field} className={field === 'location' ? 'col-span-2' : ''}>
+                  <label htmlFor={field} className={labelStyles}>
+                    {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')} *
+                  </label>
+                  <input id={field} name={field} className={inputStyles} value={item[field]} onChange={onChangeHandler}/>
+                  {errors[field] && <p className={errorStyles}>{errors[field]}</p>}
+                </div>
+              ))}
           </div>
-
-          {/* Image Upload */}
           <div className="border-t border-gray-200 pt-6">
-            <label htmlFor="imageUpload" className={labelStyles}>
-              Upload Item Image
-            </label>
+             {/* Image Upload JSX */}
+             <label htmlFor="imageUpload" className={labelStyles}>Upload Item Image</label>
             <div className="mt-2 flex items-center justify-center w-full">
-              <div className="relative w-full h-48">
-                <label
-                  htmlFor="image-upload-input"
-                  className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-                >
-                  {imageFile ? (
-                    <div className="relative w-full h-full">
-                      <img
-                        src={URL.createObjectURL(imageFile)}
-                        alt="Preview"
-                        className="h-full w-full object-contain rounded-lg p-2"
-                      />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          removeImage();
-                        }}
-                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 text-sm font-bold"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <FaCloudUploadAlt className="w-10 h-10 mb-3 text-gray-400" />
-                      <p className="mb-2 text-sm text-gray-500">
-                        <span className="font-semibold">Click to upload</span> or
-                        drag and drop
-                      </p>
-                      <p className="text-xs text-gray-500">PNG, JPG, or JPEG</p>
-                    </div>
-                  )}
-                  <input
-                    id="image-upload-input"
-                    type="file"
-                    className="hidden"
-                    accept="image/png, image/jpeg, image/jpg"
-                    onChange={handleImageChange}
-                  />
-                </label>
-              </div>
+              <label htmlFor="image-upload-input" className="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                {imageFile ? (
+                  <div className="relative w-full h-full">
+                    <img src={URL.createObjectURL(imageFile)} alt="Preview" className="h-full w-full object-contain rounded-lg p-2" />
+                    <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeImage(); }} className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 text-sm font-bold">
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <FaCloudUploadAlt className="w-10 h-10 mb-3 text-gray-400" />
+                    <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                    <p className="text-xs text-gray-500">PNG, JPG, or JPEG</p>
+                  </div>
+                )}
+                <input id="image-upload-input" type="file" className="hidden" accept="image/png, image/jpeg, image/jpg" onChange={handleImageChange} />
+              </label>
             </div>
             {errors.image && <p className={errorStyles}>{errors.image}</p>}
           </div>
-
-          {/* Buttons */}
           <div className="flex flex-row gap-4 mt-8">
-            <button
-              type="button"
-              onClick={returnBack}
-              className="w-full bg-gray-500 text-white font-bold py-3 px-4 rounded-md hover:bg-gray-600 transition"
-            >
+            <button type="button" onClick={returnBack} className="w-full bg-gray-500 text-white font-bold py-3 px-4 rounded-md hover:bg-gray-600 transition">
               Return
             </button>
-            <button
-              type="submit"
-              disabled={isSubmitting || isUploading}
-              className="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50 transition"
-            >
-              {isUploading
-                ? "Uploading Image..."
-                : isSubmitting
-                ? "Submitting..."
-                : "Submit Lost Item"}
+            <button type="submit" disabled={isSubmitting || isUploading} className="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50 transition">
+              {isUploading ? "Uploading..." : isSubmitting ? "Submitting..." : "Submit Lost Item"}
             </button>
           </div>
         </form>
