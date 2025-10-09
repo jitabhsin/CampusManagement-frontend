@@ -48,18 +48,19 @@ const MarkAsFound = () => {
     }
   };
 
-  if (loading) return <div className="text-center mt-10">Loading item details...</div>;
-  if (!lostItem) return <div className="text-center mt-10">Item not found.</div>;
+  if (loading) return <div className="text-center mt-10 text-gray-600">Loading item details...</div>;
+  if (!lostItem) return <div className="text-center mt-10 text-gray-600">Item not found.</div>;
 
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-      <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-lg">
-        <h1 className="text-2xl font-bold text-indigo-700 text-center mb-6">
-          Found Item Submission
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="bg-white shadow-xl rounded-2xl w-full max-w-lg p-8">
+        <h1 className="text-3xl font-bold text-indigo-700 text-center mb-6">
+          Mark Item as Found
         </h1>
-        <p className="text-gray-600 text-center mb-4">
-          Review the details below before confirming.
+        <p className="text-gray-600 text-center mb-6">
+          Review the item details before confirming.
         </p>
+
         <div className="space-y-3 text-gray-700">
           <p><strong>Item Name:</strong> {lostItem.itemName}</p>
           <p><strong>Category:</strong> {lostItem.category}</p>
@@ -72,23 +73,24 @@ const MarkAsFound = () => {
           {lostItem.imageUrl && (
             <img
               src={lostItem.imageUrl}
-              alt="Found Item"
-              className="w-40 h-40 object-cover rounded-md mx-auto mt-4"
+              alt="Lost Item"
+              className="w-40 h-40 object-cover rounded-md mx-auto mt-4 border border-gray-200 shadow-sm"
             />
           )}
         </div>
-        <div className="flex justify-between mt-6">
+
+        <div className="flex justify-between mt-8">
           <button
             onClick={() => navigate(-1)}
-            className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition"
+            className="bg-gray-500 text-white px-5 py-2 rounded-xl hover:bg-gray-600 transition font-medium"
           >
             Return
           </button>
           <button
             onClick={handleMarkAsFound}
-            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
+            className="bg-green-600 text-white px-5 py-2 rounded-xl hover:bg-green-700 transition font-medium"
           >
-            Confirm Mark as Found
+            Confirm Found
           </button>
         </div>
       </div>
