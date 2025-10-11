@@ -119,7 +119,7 @@ const SignupForm = () => {
                     placeholder="Username"
                     value={campusUser.username}
                     onChange={onChangeHandler}
-                    // required
+                    
                     style={{ border: "none", padding: "10px 30px" }}
                     className="w-full pl-10 pr-4 py-5 bg-black/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all duration-200 text-center hover:border-gray-600"
                   />
@@ -141,7 +141,7 @@ const SignupForm = () => {
                     placeholder="Password"
                     value={campusUser.password}
                     onChange={onChangeHandler}
-                    // required
+                    
                     style={{ border: "none", padding: "10px 30px" }}
                     className="w-full pl-10 pr-4 py-5 bg-black/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all duration-200 text-center hover:border-gray-600"
                   />
@@ -166,7 +166,7 @@ const SignupForm = () => {
                     placeholder="Full Name"
                     value={campusUser.personName}
                     onChange={onChangeHandler}
-                    // required
+                    
                     style={{ border: "none", padding: "10px 30px" }}
                     className="w-full pl-10 pr-4 py-5 bg-black/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all duration-200 text-center hover:border-gray-600"
                   />
@@ -196,7 +196,7 @@ const SignupForm = () => {
                       }
                       setConfirmPassword(event.target.value);
                     }}
-                    // required
+                    
                     style={{ border: "none", padding: "10px 30px" }}
                     className="w-full pl-10 pr-4 py-5 bg-black/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all duration-200 text-center hover:border-gray-600"
                   />
@@ -220,7 +220,7 @@ const SignupForm = () => {
                 placeholder="Email Address"
                 value={campusUser.email}
                 onChange={onChangeHandler}
-                // required
+                
                 style={{ border: "none", padding: "10px 30px" }}
                 className="w-full pl-10 pr-4 py-3 bg-black/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all duration-200 text-center hover:border-gray-600"
               />
@@ -242,7 +242,7 @@ const SignupForm = () => {
                   name="role"
                   value={campusUser.role}
                   onChange={onChangeHandler}
-                  // required
+                  
                   className="w-full pl-10 pr-4 py-3 bg-black/50 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all duration-200 text-center hover:border-gray-600"
                 >
                   <option value="" disabled>

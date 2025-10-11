@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import "../../LoginView.css";
 import { registerNewUser } from "../../Services/LoginService";
 const RegisterUser = () => {
   const [campusUser, setCampusUser] = useState({

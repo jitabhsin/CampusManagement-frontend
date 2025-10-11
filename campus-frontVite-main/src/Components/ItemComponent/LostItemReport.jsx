@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllLostItems, getLostItemsByUser } from "../../Services/ItemService";
 import { getUserDetails } from "../../Services/LoginService";
 import { Search, ArrowLeft, X, User } from "lucide-react";
+import { ThemeContext } from "../../Context/ThemeContext";
 
 // Compact detail item for grid layout
 const DetailItem = ({ label, value }) => (
@@ -18,6 +19,7 @@ const LostItemReport = () => {
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
   const navigate = useNavigate();
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     getUserDetails()
@@ -36,79 +38,74 @@ const LostItemReport = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-50 text-gray-600 font-medium">
+      <div className={`flex justify-center items-center h-screen ${theme === 'light' ? 'bg-gray-50 text-gray-600' : 'bg-gray-900 text-gray-200'} font-medium`}>
         Loading report...
       </div>
     );
   }
-  
-  const isAdmin = currentUser?.role === "Admin";
-  const tableHeaders = ["Item Name", "Category", "Location Lost", "Lost Date", "Reported By"]
-  if (!isAdmin) {
-    tableHeaders.push("Action");
-  }
-
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+    <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-900 text-white'}`}>
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800 transition-colors"
+            className={`flex items-center gap-2 text-sm font-semibold transition-colors ${theme === 'light' ? 'text-gray-600 hover:text-gray-800' : 'text-gray-200 hover:text-gray-300'}`}
           >
             <ArrowLeft size={18} />
             Return
           </button>
         </div>
-
-        <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
-          <div className="p-6 sm:p-8 border-b border-gray-200">
+        <div className={`shadow-xl rounded-2xl overflow-hidden ${theme === 'light' ? 'bg-white' : 'bg-gray-800'}`}>
+          <div className={`p-6 sm:p-8 border-b ${theme === 'light' ? 'border-gray-200' : 'border-gray-700'}`}>
             <div className="flex items-center gap-4">
               <div className="bg-red-100 p-3 rounded-full">
                 <Search className="h-8 w-8 text-red-600" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-800">Lost Item Report</h2>
-                <p className="text-sm text-gray-500">All items currently reported as lost.</p>
+                <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>Lost Item Report</h2>
+                <p className={`text-sm ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>All items currently reported as lost.</p>
               </div>
             </div>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className={`min-w-full divide-y ${theme === 'light' ? 'divide-gray-200' : 'divide-gray-700'}`}>
+              <thead className={theme === 'light' ? 'bg-gray-50' : 'bg-gray-800'}>
                 <tr>
-                  {tableHeaders.map(
-                    (header) => (
+                  {["Item Name", "Category", "Location Lost", "Lost Date", "Reported By"]
+                    .concat(currentUser?.role === "Student" ? ["Action"] : [])
+                    .map((header) => (
                       <th
                         key={header}
-                        className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                        className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${
+                          theme === "light" ? "text-gray-600" : "text-gray-300"
+                        }`}
                       >
                         {header}
                       </th>
-                    )
-                  )}
+                    ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className={theme === 'light' ? 'bg-white divide-y divide-gray-200' : 'bg-gray-800 divide-y divide-gray-700'}>
                 {lostItems.length > 0 ? (
                   lostItems.map((item) => (
                     <tr
                       key={item.lostItemId}
-                      className="hover:bg-gray-50 cursor-pointer transition-colors"
+                      className={`${theme === 'light' ? 'hover:bg-gray-50' : 'hover:bg-gray-700'} cursor-pointer transition-colors`}
                       onClick={() => setSelectedItem(item)}
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
                         {item.itemName}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.category}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.location}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.lostDate}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.username}</td>
-                      {!isAdmin && (
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>{item.category}</td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>{item.location}</td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>{item.lostDate}</td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>{item.username}</td>
+
+                      {currentUser?.role === "Student" && (
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {currentUser?.role === "Student" && item.username === currentUser.username && (
+                          {item.username === currentUser.username && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -125,7 +122,7 @@ const LostItemReport = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={tableHeaders.length} className="px-6 py-10 text-center text-gray-500">
+                    <td colSpan={currentUser?.role === "Student" ? "6" : "5"} className="px-6 py-10 text-center text-gray-500">
                       No lost items reported.
                     </td>
                   </tr>

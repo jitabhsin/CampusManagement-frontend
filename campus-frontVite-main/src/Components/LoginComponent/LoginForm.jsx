@@ -17,7 +17,7 @@ const LoginForm = () => {
     const name = event.target.name;
     const value = event.target.value;
     setFormData((values) => ({ ...values, [name]: value }));
-    // Clear field-specific error as the user types
+    
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -64,7 +64,7 @@ const LoginForm = () => {
 
   return (
     <div className="w-full max-w-md p-8 space-y-8 bg-black/40 backdrop-blur-2xl rounded-2xl shadow-2xl ">
-      {/* // For Spotlight Effect :  */}
+      
       {/* <div className="w-full max-w-md p-8 space-y-8 shadow-2xl "> */}
       {/* Header Section  */}
       <div className="text-center">
@@ -91,7 +91,7 @@ const LoginForm = () => {
               placeholder="Username"
               value={formData.username}
               onChange={onChangeHandler}
-              // required
+              
               className="w-full pl-10 pr-4 py-3 bg-black/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all duration-200 text-center hover:border-gray-600"
             />
           </div>
@@ -112,7 +112,7 @@ const LoginForm = () => {
               placeholder="Password"
               value={formData.password}
               onChange={onChangeHandler}
-              // required
+              
               className="w-full pl-10 pr-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition-all duration-200 text-center hover:border-gray-600"
             />
           </div>

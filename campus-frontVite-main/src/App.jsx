@@ -9,7 +9,7 @@ import LostItemReport from "./Components/ItemComponent/LostItemReport";
 import FoundItemSubmission from "./Components/ItemComponent/FoundItemSubmission";
 import FoundItemReport from "./Components/ItemComponent/FoundItemReport";
 import Personal from "./Components/LoginComponent/Personal";
-import StudentList from "./Components/LoginComponent/StudentList";
+
 import DeleteStudentList from "./Components/LoginComponent/DeleteStudentList";
 import LostItemTrack from "./Components/ItemComponent/LostItemTrack";
 import MarkAsFound from "./Components/ItemComponent/MarkAsFound";
@@ -30,7 +30,7 @@ function App() {
 
           {/* Student Management */}
           <Route path="/SingleStudentDetail" element={<SingleStudentDetails />} />
-          <Route path="/Students" element={<StudentList />} />
+        
           <Route path="/DeleteStudentList" element={<DeleteStudentList />} />
 
           {/* Lost Item Routes */}

@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from "react"; // Import useRef
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { lostItemSubmission } from "../../Services/ItemService";
 import { getUserDetails } from "../../Services/LoginService";
 import axios from "axios";
 import { ArrowLeft, CloudUpload, X } from "lucide-react";
+import { ThemeContext } from "../../Context/ThemeContext";
 
 const DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dkkvonw5u/image/upload/v1759833173/Gemini_Generated_Image_vu4wr4vu4wr4vu4w_niixw0.png";
 
@@ -15,7 +16,7 @@ const LostItemSubmit = () => {
     const [imageFile, setImageFile] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
     const today = new Date().toISOString().slice(0, 10);
-    const fileInputRef = useRef(null); // Create a ref for the file input
+    const fileInputRef = useRef(null);
 
     const [item, setItem] = useState({
         username: "",
@@ -51,12 +52,12 @@ const LostItemSubmit = () => {
         }
     };
 
-    // Reverted to a simpler function, no stopPropagation needed.
+    
     const removeImage = () => {
         setImageFile(null);
         setPreviewImage(null);
         if (fileInputRef.current) {
-            fileInputRef.current.value = ""; // Clear the file input
+            fileInputRef.current.value = "";
         }
     };
 
@@ -109,35 +110,36 @@ const LostItemSubmit = () => {
             .finally(() => setIsSubmitting(false));
     };
 
+    const { theme } = useContext(ThemeContext);
     const inputStyles = "w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
-    const labelStyles = "block text-sm font-semibold text-gray-700 mb-1";
+    const labelStyles = theme === 'light' ? "block text-sm font-semibold text-gray-700 mb-1" : "block text-sm font-semibold text-gray-200 mb-1";
     const errorStyles = "text-red-500 text-xs mt-1";
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+        <div className={`min-h-screen flex flex-col items-center justify-center p-4 ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-900 text-white'}`}>
             <div className="w-full max-w-6xl">
                 <div className="mb-4">
-                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800">
+                    <button onClick={() => navigate(-1)} className={`flex items-center gap-2 text-sm font-semibold transition-colors ${theme === 'light' ? 'text-gray-600 hover:text-gray-800' : 'text-gray-200 hover:text-gray-300'}`}>
                         <ArrowLeft size={18} /> Return
                     </button>
                 </div>
-                <form onSubmit={handleSubmit} className="bg-white shadow-xl rounded-2xl overflow-hidden">
+                <form onSubmit={handleSubmit} className={`shadow-xl rounded-2xl overflow-hidden ${theme === 'light' ? 'bg-white' : 'bg-gray-800'}`}>
                     <div className="grid grid-cols-1 lg:grid-cols-5">
                         {/* Left Pane: Image Uploader */}
-                        <div className="lg:col-span-2 bg-gray-100 p-8 flex flex-col justify-center">
+                        <div className={`lg:col-span-2 p-8 flex flex-col justify-center ${theme === 'light' ? 'bg-gray-100' : 'bg-gray-700'}`}>
                             <label className={labelStyles}>Item Image (Optional)</label>
                             <div className="mt-2 w-full h-64">
                                 {previewImage ? (
-                                    // If image exists, show the preview with a remove button
+                                    
                                     <div className="relative w-full h-full">
-                                        <img src={previewImage} alt="Preview" className="h-full w-full object-contain rounded-lg p-2 bg-white border-2 border-gray-300" />
+                                        <img src={previewImage} alt="Preview" className={`h-full w-full object-contain rounded-lg p-2 border-2 border-gray-300 ${theme === 'light' ? 'bg-white' : 'bg-gray-700'}`} />
                                         <button type="button" onClick={removeImage} className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full shadow-md hover:bg-red-600">
                                             <X size={16} />
                                         </button>
                                     </div>
                                 ) : (
-                                    // Otherwise, show the uploader box
-                                    <label htmlFor="image-upload-input" className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-gray-50">
+                                    
+                                    <label htmlFor="image-upload-input" className={`flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer ${theme === 'light' ? 'bg-white hover:bg-gray-50' : 'bg-gray-700 hover:bg-gray-600'}`}>
                                         <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-500">
                                             <CloudUpload className="w-10 h-10 mb-3" />
                                             <p className="text-sm font-semibold">Click to upload image</p>

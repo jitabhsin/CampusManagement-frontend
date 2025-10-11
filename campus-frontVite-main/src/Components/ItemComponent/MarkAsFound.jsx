@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   getLostItemById,
@@ -7,6 +7,7 @@ import {
 } from "../../Services/ItemService";
 import { getUserDetails } from "../../Services/LoginService";
 import { CheckCircle, ArrowLeft } from "lucide-react";
+import { ThemeContext } from "../../Context/ThemeContext";
 
 const MarkAsFound = () => {
   const { id } = useParams();
@@ -16,6 +17,7 @@ const MarkAsFound = () => {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [foundDate, setFoundDate] = useState(""); // user-selected date
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     Promise.all([getUserDetails(), getLostItemById(id)])
@@ -64,7 +66,7 @@ const MarkAsFound = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-50 text-gray-600 font-medium">
+      <div className={`flex justify-center items-center h-screen ${theme === 'light' ? 'bg-gray-50 text-gray-600' : 'bg-gray-900 text-gray-200'} font-medium`}>
         Loading item details...
       </div>
     );
@@ -72,36 +74,35 @@ const MarkAsFound = () => {
 
   if (!lostItem) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-50 text-red-600 font-medium">
+      <div className={`flex justify-center items-center h-screen ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-900'} text-red-600 font-medium`}>
         Item not found.
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8 flex items-center justify-center">
+    <div className={`min-h-screen p-4 sm:p-6 lg:p-8 flex items-center justify-center ${theme === 'light' ? 'bg-gray-50' : 'bg-gray-900 text-white'}`}>
       <div className="max-w-2xl w-full">
         <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800"
+            className={`flex items-center gap-2 text-sm font-semibold transition-colors ${theme === 'light' ? 'text-gray-600 hover:text-gray-800' : 'text-gray-200 hover:text-gray-300'}`}
           >
             <ArrowLeft size={18} /> Return
           </button>
         </div>
-
-        <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
+        <div className={`shadow-xl rounded-2xl overflow-hidden ${theme === 'light' ? 'bg-white' : 'bg-gray-800'}`}>
           <div className="p-8 text-center">
             <CheckCircle className="h-12 w-12 text-green-500 mx-auto bg-green-100 p-2 rounded-full mb-4" />
-            <h1 className="text-2xl font-bold text-gray-800">
+            <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
               Confirm Item Found
             </h1>
-            <p className="text-gray-500 mt-2">
+            <p className={`mt-2 ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}>
               Choose the date when this item was found and confirm the update.
             </p>
           </div>
 
-          <div className="p-8 border-t border-gray-200">
+          <div className={`p-8 border-t ${theme === 'light' ? 'border-gray-200' : 'border-gray-700'}`}>
             <div className="flex flex-col md:flex-row gap-8 items-center">
               <img
                 src={lostItem.imageUrl}
