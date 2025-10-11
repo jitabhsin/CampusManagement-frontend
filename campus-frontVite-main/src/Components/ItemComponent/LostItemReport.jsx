@@ -41,6 +41,13 @@ const LostItemReport = () => {
       </div>
     );
   }
+  
+  const isAdmin = currentUser?.role === "Admin";
+  const tableHeaders = ["Item Name", "Category", "Location Lost", "Lost Date", "Reported By"]
+  if (!isAdmin) {
+    tableHeaders.push("Action");
+  }
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
@@ -72,7 +79,7 @@ const LostItemReport = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  {["Item Name", "Category", "Location Lost", "Lost Date", "Reported By", "Action"].map(
+                  {tableHeaders.map(
                     (header) => (
                       <th
                         key={header}
@@ -99,24 +106,26 @@ const LostItemReport = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.location}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.lostDate}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.username}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        {currentUser?.role === "Student" && item.username === currentUser.username && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/mark-found/${item.lostItemId}`);
-                            }}
-                            className="bg-green-600 text-white py-1.5 px-3 rounded-md hover:bg-green-700 transition font-semibold text-xs"
-                          >
-                            Mark as Found
-                          </button>
-                        )}
-                      </td>
+                      {!isAdmin && (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          {currentUser?.role === "Student" && item.username === currentUser.username && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/mark-found/${item.lostItemId}`);
+                              }}
+                              className="bg-green-600 text-white py-1.5 px-3 rounded-md hover:bg-green-700 transition font-semibold text-xs"
+                            >
+                              Mark as Found
+                            </button>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="px-6 py-10 text-center text-gray-500">
+                    <td colSpan={tableHeaders.length} className="px-6 py-10 text-center text-gray-500">
                       No lost items reported.
                     </td>
                   </tr>
