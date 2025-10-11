@@ -1,266 +1,200 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react"; // Import useRef
 import { useNavigate } from "react-router-dom";
-import { FaBoxOpen, FaCloudUploadAlt } from "react-icons/fa";
 import { lostItemSubmission } from "../../Services/ItemService";
 import { getUserDetails } from "../../Services/LoginService";
 import axios from "axios";
+import { ArrowLeft, CloudUpload, X } from "lucide-react";
 
-const DEFAULT_IMAGE_URL =
-  "https://res.cloudinary.com/dkkvonw5u/image/upload/v1759833173/Gemini_Generated_Image_vu4wr4vu4wr4vu4w_niixw0.png";
+const DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dkkvonw5u/image/upload/v1759833173/Gemini_Generated_Image_vu4wr4vu4wr4vu4w_niixw0.png";
 
 const LostItemSubmit = () => {
-  let navigate = useNavigate();
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [campusUser, setCampusUser] = useState(null);
-  const [imageFile, setImageFile] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
+    const navigate = useNavigate();
+    const [errors, setErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [imageFile, setImageFile] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null);
+    const today = new Date().toISOString().slice(0, 10);
+    const fileInputRef = useRef(null); // Create a ref for the file input
 
-  const [item, setItem] = useState({
-    username: "",
-    userEmail: "",
-    itemName: "",
-    category: "",
-    color: "",
-    brand: "",
-    location: "",
-    imageUrl: "",
-  });
-
-  const today = new Date().toISOString().slice(0, 10);
-  const [ldate, setLdate] = useState(today);
-
-  useEffect(() => {
-    getUserDetails().then((response) => {
-      const userData = response.data;
-      setCampusUser(userData);
-      setItem((prev) => ({
-        ...prev,
-        username: userData.username,
-        userEmail: userData.email,
-      }));
+    const [item, setItem] = useState({
+        username: "",
+        userEmail: "",
+        itemName: "",
+        category: "",
+        color: "",
+        brand: "",
+        location: "",
+        imageUrl: "",
+        lostDate: today,
+        status: false,
     });
-  }, []);
 
-  const onChangeHandler = (event) => {
-    const { name, value } = event.target;
-    setItem((values) => ({ ...values, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
-    }
-  };
+    useEffect(() => {
+        getUserDetails().then((response) => {
+            const { username, email } = response.data;
+            setItem((prev) => ({ ...prev, username, userEmail: email }));
+        });
+    }, []);
 
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith("image/")) {
-      setImageFile(file);
-    } else {
-      setImageFile(null);
-    }
-  };
-
-  const removeImage = () => {
-    setImageFile(null);
-    const input = document.getElementById("image-upload-input");
-    if (input) {
-      input.value = "";
-    }
-  };
-
-  const uploadImgToCloudinary = async () => {
-    if (!imageFile) return null;
-
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", imageFile);
-    formData.append("upload_preset", "LostFoundApp");
-
-    try {
-      const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/dkkvonw5u/image/upload",
-        formData
-      );
-      setIsUploading(false);
-      return response.data.secure_url;
-    } catch (error) {
-      console.error("Image upload failed:", error);
-      setIsUploading(false);
-      setErrors((prev) => ({
-        ...prev,
-        image: "Image Upload Failed. Please try again.",
-      }));
-      return null;
-    }
-  };
-
-  const lostItemFormSubmit = async () => {
-    let finalImageUrl = DEFAULT_IMAGE_URL;
-
-    if (imageFile) {
-      const uploadedUrl = await uploadImgToCloudinary();
-      if (uploadedUrl) {
-        finalImageUrl = uploadedUrl;
-      } else {
-        setIsSubmitting(false);
-        return;
-      }
-    }
-
-    const finalItem = {
-      ...item,
-      username: campusUser.username,
-      userEmail: campusUser.email,
-      lostDate: ldate,
-      imageUrl: finalImageUrl,
+    const onChangeHandler = (e) => {
+        const { name, value } = e.target;
+        setItem((prev) => ({ ...prev, [name]: value }));
+        if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
     };
 
-    return lostItemSubmission(finalItem).then(() => {
-      alert("Lost Item Submitted Successfully!");
-      navigate(campusUser?.role === "Admin" ? "/AdminMenu" : "/StudentMenu");
-    });
-  };
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith("image/")) {
+            setImageFile(file);
+            setPreviewImage(URL.createObjectURL(file));
+        }
+    };
 
-  const handleValidation = (event) => {
-    event.preventDefault();
-    setIsSubmitting(true);
-    let tempErrors = {};
-    let isValid = true;
+    // Reverted to a simpler function, no stopPropagation needed.
+    const removeImage = () => {
+        setImageFile(null);
+        setPreviewImage(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ""; // Clear the file input
+        }
+    };
 
-    if (!ldate) {
-      tempErrors.lostDate = "Lost Date is required";
-      isValid = false;
-    }
-    const requiredFields = ["itemName", "location", "category", "brand", "color"];
-    requiredFields.forEach(field => {
-      if (!String(item[field] || "").trim()) {
-        tempErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
-        isValid = false;
-      }
-    });
+    const uploadImgToCloudinary = async () => {
+        if (!imageFile) return null;
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append("file", imageFile);
+        formData.append("upload_preset", "LostFoundApp");
+        try {
+            const res = await axios.post("https://api.cloudinary.com/v1_1/dkkvonw5u/image/upload", formData);
+            return res.data.secure_url;
+        } catch (error) {
+            setErrors((prev) => ({ ...prev, image: "Image Upload Failed." }));
+            return null;
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
-    setErrors(tempErrors);
-    if (!isValid) {
-      setIsSubmitting(false);
-      return;
-    }
+    const validateForm = () => {
+        let tempErrors = {};
+        ["itemName", "category", "location"].forEach((field) => {
+            if (!item[field]?.trim()) tempErrors[field] = "This field is required";
+        });
+        setErrors(tempErrors);
+        return Object.keys(tempErrors).length === 0;
+    };
 
-    lostItemFormSubmit()
-      .catch((err) => {
-        console.error("Submission failed:", err);
-        alert("Submission failed. Please try again.");
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-        setIsUploading(false);
-      });
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!validateForm()) return;
+        setIsSubmitting(true);
+        let imageUrl = DEFAULT_IMAGE_URL;
+        if (imageFile) {
+            const uploadedUrl = await uploadImgToCloudinary();
+            if (uploadedUrl) {
+                imageUrl = uploadedUrl;
+            } else {
+                setIsSubmitting(false);
+                return;
+            }
+        }
+        lostItemSubmission({ ...item, imageUrl })
+            .then(() => {
+                alert("Lost Item Submitted Successfully!");
+                navigate(-1);
+            })
+            .catch(() => alert("Submission failed. Please try again."))
+            .finally(() => setIsSubmitting(false));
+    };
 
-  const returnBack = () => {
-    navigate(campusUser?.role === "Admin" ? "/AdminMenu" : "/StudentMenu");
-  };
+    const inputStyles = "w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+    const labelStyles = "block text-sm font-semibold text-gray-700 mb-1";
+    const errorStyles = "text-red-500 text-xs mt-1";
 
-  const inputStyles =
-    "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent";
-  const labelStyles = "block text-sm font-medium text-gray-700 mb-1";
-  const errorStyles = "text-red-500 text-xs mt-1";
-
-  return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4 overflow-x-auto">
-      <div className="flex space-x-8 w-max bg-white rounded-xl shadow-lg p-8">
-        <div className="flex flex-col justify-center items-center min-w-[400px] space-y-6">
-          <div className="flex items-center justify-center w-20 h-20 bg-indigo-100 rounded-full">
-            <FaBoxOpen size={40} className="text-indigo-600" />
-          </div>
-          <h2 className="text-3xl font-bold text-gray-800 text-center">
-            Lost Item Submission
-          </h2>
-          <p className="text-gray-500 text-center">
-            Report an item you have lost.
-          </p>
-          <div className="w-full space-y-4">
-            <div>
-              <label className={labelStyles}>User Name</label>
-              <input
-                className={`${inputStyles} bg-gray-100 cursor-not-allowed`}
-                value={item.username}
-                readOnly
-              />
-            </div>
-            <div>
-              <label className={labelStyles}>User Email</label>
-              <input
-                className={`${inputStyles} bg-gray-100 cursor-not-allowed`}
-                value={item.userEmail}
-                readOnly
-              />
-            </div>
-            <div>
-              <label htmlFor="lostDate" className={labelStyles}>
-                Select Lost Date *
-              </label>
-              <input
-                id="lostDate"
-                type="date"
-                className={inputStyles}
-                value={ldate}
-                onChange={(e) => setLdate(e.target.value)}
-              />
-              {errors.lostDate && <p className={errorStyles}>{errors.lostDate}</p>}
-            </div>
-          </div>
-        </div>
-        <form
-          onSubmit={handleValidation}
-          className="flex flex-col min-w-[500px] space-y-6"
-        >
-          <div className="grid grid-cols-2 gap-6">
-             {/* Form fields for itemName, category, color, brand, location */}
-             {Object.keys(item).filter(k => ["itemName", "category", "color", "brand", "location"].includes(k)).map(field => (
-                <div key={field} className={field === 'location' ? 'col-span-2' : ''}>
-                  <label htmlFor={field} className={labelStyles}>
-                    {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')} *
-                  </label>
-                  <input id={field} name={field} className={inputStyles} value={item[field]} onChange={onChangeHandler}/>
-                  {errors[field] && <p className={errorStyles}>{errors[field]}</p>}
-                </div>
-              ))}
-          </div>
-          <div className="border-t border-gray-200 pt-6">
-             {/* Image Upload JSX */}
-             <label htmlFor="imageUpload" className={labelStyles}>Upload Item Image</label>
-            <div className="mt-2 flex items-center justify-center w-full">
-              <label htmlFor="image-upload-input" className="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                {imageFile ? (
-                  <div className="relative w-full h-full">
-                    <img src={URL.createObjectURL(imageFile)} alt="Preview" className="h-full w-full object-contain rounded-lg p-2" />
-                    <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeImage(); }} className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded px-2 py-1 text-sm font-bold">
-                      Cancel
+    return (
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+            <div className="w-full max-w-6xl">
+                <div className="mb-4">
+                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800">
+                        <ArrowLeft size={18} /> Return
                     </button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <FaCloudUploadAlt className="w-10 h-10 mb-3 text-gray-400" />
-                    <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                    <p className="text-xs text-gray-500">PNG, JPG, or JPEG</p>
-                  </div>
-                )}
-                <input id="image-upload-input" type="file" className="hidden" accept="image/png, image/jpeg, image/jpg" onChange={handleImageChange} />
-              </label>
+                </div>
+                <form onSubmit={handleSubmit} className="bg-white shadow-xl rounded-2xl overflow-hidden">
+                    <div className="grid grid-cols-1 lg:grid-cols-5">
+                        {/* Left Pane: Image Uploader */}
+                        <div className="lg:col-span-2 bg-gray-100 p-8 flex flex-col justify-center">
+                            <label className={labelStyles}>Item Image (Optional)</label>
+                            <div className="mt-2 w-full h-64">
+                                {previewImage ? (
+                                    // If image exists, show the preview with a remove button
+                                    <div className="relative w-full h-full">
+                                        <img src={previewImage} alt="Preview" className="h-full w-full object-contain rounded-lg p-2 bg-white border-2 border-gray-300" />
+                                        <button type="button" onClick={removeImage} className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full shadow-md hover:bg-red-600">
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    // Otherwise, show the uploader box
+                                    <label htmlFor="image-upload-input" className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-gray-50">
+                                        <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-500">
+                                            <CloudUpload className="w-10 h-10 mb-3" />
+                                            <p className="text-sm font-semibold">Click to upload image</p>
+                                            <p className="text-xs">PNG or JPG</p>
+                                        </div>
+                                        <input ref={fileInputRef} id="image-upload-input" type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+                                    </label>
+                                )}
+                            </div>
+                            {errors.image && <p className={errorStyles}>{errors.image}</p>}
+                        </div>
+
+                        {/* Right Pane: Form Fields */}
+                        <div className="lg:col-span-3 p-8">
+                            <h2 className="text-2xl font-bold text-gray-800 mb-1">Report a Lost Item</h2>
+                            <p className="text-sm text-gray-500 mb-6">Fill in the details of the item you lost.</p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* ... (form fields are unchanged) ... */}
+                                <div className="md:col-span-2">
+                                    <label className={labelStyles}>Item Name *</label>
+                                    <input name="itemName" className={inputStyles} value={item.itemName} onChange={onChangeHandler} />
+                                    {errors.itemName && <p className={errorStyles}>{errors.itemName}</p>}
+                                </div>
+                                <div>
+                                    <label className={labelStyles}>Category *</label>
+                                    <input name="category" className={inputStyles} value={item.category} onChange={onChangeHandler} />
+                                    {errors.category && <p className={errorStyles}>{errors.category}</p>}
+                                </div>
+                                <div>
+                                    <label className={labelStyles}>Lost Date</label>
+                                    <input type="date" name="lostDate" className={inputStyles} value={item.lostDate} onChange={onChangeHandler} />
+                                </div>
+                                <div>
+                                    <label className={labelStyles}>Brand</label>
+                                    <input name="brand" className={inputStyles} value={item.brand} onChange={onChangeHandler} />
+                                </div>
+                                <div>
+                                    <label className={labelStyles}>Color</label>
+                                    <input name="color" className={inputStyles} value={item.color} onChange={onChangeHandler} />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className={labelStyles}>Last Known Location *</label>
+                                    <input name="location" className={inputStyles} value={item.location} onChange={onChangeHandler} />
+                                    {errors.location && <p className={errorStyles}>{errors.location}</p>}
+                                </div>
+                            </div>
+                            <div className="pt-8 flex justify-end">
+                                <button type="submit" disabled={isSubmitting || isUploading} className="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-60 transition-colors">
+                                    {isUploading ? "Uploading..." : isSubmitting ? "Submitting..." : "Submit Item"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
-            {errors.image && <p className={errorStyles}>{errors.image}</p>}
-          </div>
-          <div className="flex flex-row gap-4 mt-8">
-            <button type="button" onClick={returnBack} className="w-full bg-gray-500 text-white font-bold py-3 px-4 rounded-md hover:bg-gray-600 transition">
-              Return
-            </button>
-            <button type="submit" disabled={isSubmitting || isUploading} className="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50 transition">
-              {isUploading ? "Uploading..." : isSubmitting ? "Submitting..." : "Submit Lost Item"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default LostItemSubmit;

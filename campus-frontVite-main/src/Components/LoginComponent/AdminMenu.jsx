@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import { getAllStudents } from "../../Services/LoginService";
 import { getAllLostItems, getAllFoundItems } from "../../Services/ItemService";
 import {
@@ -18,6 +18,7 @@ const AdminDashboard = () => {
     totalFound: 0,
   });
 
+  const navigate = useNavigate(); // Initialize the navigate function
   const timeoutRef = useRef(null);
 
   useEffect(() => {
@@ -87,7 +88,6 @@ const AdminDashboard = () => {
                     />
                   </button>
                   
-                  {/* Dropdown Panel with Tailwind Transitions */}
                   <div
                     className={`
                       absolute top-full left-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 overflow-hidden
@@ -151,7 +151,11 @@ const AdminDashboard = () => {
         </header>
 
         <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:scale-105 transition-all duration-300">
+          {/* Updated Stats Cards */}
+          <div
+            className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer"
+            onClick={() => navigate("/DeleteStudentList")}
+          >
             <div className="flex items-center justify-between mb-4">
               <p className="text-base font-medium text-gray-600">Total Users</p>
               <Users className="w-6 h-6 text-blue-500" />
@@ -161,7 +165,10 @@ const AdminDashboard = () => {
             </p>
           </div>
 
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:scale-105 transition-all duration-300">
+          <div
+            className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer"
+            onClick={() => navigate("/LostReport")}
+          >
             <div className="flex items-center justify-between mb-4">
               <p className="text-base font-medium text-gray-600">Lost Items</p>
               <Archive className="w-6 h-6 text-red-500" />
@@ -171,7 +178,10 @@ const AdminDashboard = () => {
             </p>
           </div>
 
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:scale-105 transition-all duration-300">
+          <div
+            className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer"
+            onClick={() => navigate("/FoundReport")}
+          >
             <div className="flex items-center justify-between mb-4">
               <p className="text-base font-medium text-gray-600">Found Items</p>
               <ArchiveRestore className="w-6 h-6 text-green-500" />

@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getLostItemsByUser, getMatchingFoundItems } from "../../Services/ItemService";
-import { FaSearch, FaTimes, FaArrowLeft } from "react-icons/fa";
+import {
+  getLostItemsByUser,
+  getMatchingFoundItems,
+} from "../../Services/ItemService";
+import { Search, ChevronDown, Loader2, ArrowLeft } from "lucide-react";
 
 const FoundItemTile = ({ item }) => (
-  <div className="bg-gray-100 rounded-lg shadow-sm p-4 flex flex-col items-center text-center hover:shadow-md transition-shadow duration-300 w-full max-w-xs">
-    <img src={item.imageUrl || 'https://via.placeholder.com/150'} alt={item.itemName} className="w-24 h-24 object-cover rounded-full mb-3 border-2 border-gray-300" />
-    <p className="font-medium text-gray-900 text-lg truncate">{item.itemName}</p>
-    <p className="text-gray-600 text-sm truncate">{item.brand || "N/A"} - {item.color || "N/A"}</p>
-    <p className="text-gray-600 text-sm truncate">{item.category || "N/A"}</p>
+  <div className="bg-white rounded-lg p-3 flex items-center gap-3 border border-gray-200">
+    <img
+      src={item.imageUrl || "https://via.placeholder.com/150"}
+      alt={item.itemName}
+      className="w-12 h-12 object-cover rounded-md"
+    />
+    <div>
+      <p className="font-semibold text-gray-800 text-sm">{item.itemName}</p>
+      <p className="text-gray-500 text-xs">Found at: {item.location}</p>
+    </div>
   </div>
 );
 
@@ -35,31 +43,50 @@ const LostItemPanel = ({ item }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col">
-      <div className="p-4 bg-indigo-600 text-white flex justify-between items-center">
-        <h3 className="text-lg font-semibold truncate">{item.itemName}</h3>
-        <button onClick={handleToggleMatches} className="text-white hover:text-gray-200 transition-colors">
-          {isExpanded ? <FaTimes /> : <FaSearch />}
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl">
+      <div className="p-5 flex flex-col items-center text-center">
+        <img
+          src={item.imageUrl || "https://via.placeholder.com/150"}
+          alt={item.itemName}
+          className="w-32 h-32 object-cover rounded-lg mb-4 shadow-md"
+        />
+        <h3 className="text-lg font-bold text-gray-900">{item.itemName}</h3>
+        <p className="text-gray-500 text-sm">Lost on: {item.lostDate}</p>
+      </div>
+      <div className="border-t border-gray-200">
+        <button
+          onClick={handleToggleMatches}
+          className="w-full flex justify-center items-center gap-2 text-sm font-semibold p-3 bg-gray-50 text-blue-600 hover:bg-gray-100 transition-colors"
+        >
+          {isLoading ? (
+            <Loader2 className="animate-spin" />
+          ) : (
+            <>
+              <span>{isExpanded ? "Hide Matches" : "Find Matches"}</span>
+              <ChevronDown
+                className={`transition-transform ${
+                  isExpanded ? "rotate-180" : ""
+                }`}
+              />
+            </>
+          )}
         </button>
       </div>
-      <div className="p-4 flex flex-col items-center">
-        <img src={item.imageUrl || 'https://via.placeholder.com/150'} alt={item.itemName} className="w-28 h-28 object-cover rounded-md mb-3 shadow-sm" />
-        <p className="text-gray-700 text-sm">Brand: {item.brand || "Unknown"}</p>
-        <p className="text-gray-700 text-sm">Color: {item.color || "Unknown"}</p>
-        <p className="text-gray-500 text-xs mt-2">Lost on: {item.lostDate}</p>
-      </div>
       {isExpanded && (
-        <div className="p-4 bg-gray-50 border-t border-gray-300">
-          {isLoading ? (<p className="text-center text-gray-600">Searching...</p>) 
-          : matches.length > 0 ? (
-            <div className="flex flex-col gap-4">
-              <h4 className="text-indigo-700 font-medium text-center">Potential Matches</h4>
+        <div className="p-4 bg-gray-50 border-t border-gray-200">
+          {matches.length > 0 ? (
+            <div className="space-y-3">
+              <h4 className="text-sm font-bold text-gray-700 text-center mb-2">
+                Potential Matches Found
+              </h4>
               {matches.map((found) => (
                 <FoundItemTile key={found.foundItemId} item={found} />
               ))}
             </div>
           ) : (
-            <p className="text-center text-gray-600">No potential matches found.</p>
+            <p className="text-center text-gray-600 text-sm py-4">
+              No potential matches found yet.
+            </p>
           )}
         </div>
       )}
@@ -73,36 +100,55 @@ const LostItemTrack = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchLostItems = async () => {
-      try {
-        const res = await getLostItemsByUser();
-        setLostItems(res.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchLostItems();
+    getLostItemsByUser()
+      .then((res) => setLostItems(res.data))
+      .catch((err) => console.error(err))
+      .finally(() => setIsLoading(false));
   }, []);
 
-  if (isLoading) return <p className="text-center mt-12 text-gray-700 text-xl">Loading your lost items...</p>;
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-50 text-gray-600 font-medium">
+        Loading your items...
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-8">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-indigo-700 font-semibold mb-6 hover:text-indigo-900 transition-colors">
-        <FaArrowLeft /> Return
-      </button>
-      <h2 className="text-4xl font-extrabold mb-10 text-indigo-800 text-center">Track Your Lost Items</h2>
-      {lostItems.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {lostItems.map((item) => (
-            <LostItemPanel key={item.lostItemId} item={item} />
-            ))}
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <ArrowLeft size={18} />
+            Return
+          </button>
         </div>
-      ) : (
-        <p className="text-center mt-12 text-gray-700 text-xl">You have no lost items to track.</p>
-      )}
+
+        <div className="text-center mb-10">
+            <Search className="h-10 w-10 text-blue-600 mx-auto bg-blue-100 p-2 rounded-full mb-4"/>
+            <h2 className="text-3xl font-extrabold text-gray-800">
+                Track Your Lost Items
+            </h2>
+            <p className="text-gray-500 mt-2">Check for potential matches for your lost items.</p>
+        </div>
+
+        {lostItems.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {lostItems.map((item) => (
+              <LostItemPanel key={item.lostItemId} item={item} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-white rounded-2xl shadow-xl">
+            <p className="text-gray-700 text-lg">
+              You haven't reported any lost items yet.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

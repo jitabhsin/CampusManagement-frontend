@@ -1,11 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaBox, FaTimes } from "react-icons/fa";
-import { getAllFoundItems, getFoundItemsByUser } from "../../Services/ItemService";
+import {
+  getAllFoundItems,
+  getFoundItemsByUser,
+} from "../../Services/ItemService";
 import { getUserDetails } from "../../Services/LoginService";
+import { ArchiveRestore, ArrowLeft, X, User } from "lucide-react";
+
+// A more compact detail item for the grid layout
+const DetailItem = ({ label, value }) => (
+  <div>
+    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{label}</p>
+    <p className="font-medium text-gray-800">{value || "N/A"}</p>
+  </div>
+);
 
 const FoundItemReport = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const [itemList, setItemList] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,93 +32,128 @@ const FoundItemReport = () => {
   }, []);
 
   useEffect(() => {
-    if (currentUser) {
-      const fetchItems =
-        currentUser.role === "Admin" ? getAllFoundItems : getFoundItemsByUser;
-      fetchItems()
-        .then((response) => setItemList(response.data))
-        .catch((error) => console.error("Error fetching found items:", error))
-        .finally(() => setLoading(false));
-    }
+    if (!currentUser) return;
+    const fetchItems =
+      currentUser.role === "Admin" ? getAllFoundItems : getFoundItemsByUser;
+    fetchItems()
+      .then((response) => setItemList(response.data))
+      .catch((error) => console.error("Error fetching found items:", error))
+      .finally(() => setLoading(false));
   }, [currentUser]);
 
-  const returnBack = () => {
-    navigate(currentUser?.role === "Admin" ? "/AdminMenu" : "/StudentMenu");
-  };
+  const pageTitle =
+    currentUser?.role === "Admin" ? "Found Item Report" : "My Found Items";
+  const pageDescription =
+    currentUser?.role === "Admin"
+      ? "All reported found items"
+      : "Items you have reported as found";
 
   if (loading) {
-    return <div className="text-center text-lg mt-10">Loading found items...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-50 text-gray-600 font-medium">
+        Loading report...
+      </div>
+    );
   }
 
-  const pageTitle = currentUser?.role === "Admin" ? "Found Item Report" : "My Found Items";
-  const pageDescription = currentUser?.role === "Admin" ? "All Reported Found Items" : "Items you have reported as found";
-
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl bg-white rounded-xl shadow-lg p-8 space-y-6">
-        <div className="flex flex-col items-center">
-          <div className="flex items-center justify-center w-16 h-16 mb-4 bg-indigo-100 rounded-full">
-            <FaBox size={35} className="text-indigo-600" />
-          </div>
-          <h2 className="text-3xl font-bold text-gray-800 text-center">{pageTitle}</h2>
-          <p className="text-gray-500 mt-2">{pageDescription}</p>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
-            <thead className="bg-indigo-600 text-white">
-              <tr>
-                {["Item Id", "Item Name", "Category", "Color", "Brand", "Location", "Found Date", "User", "Email"].map((header) => (
-                  <th key={header} className="px-4 py-3 text-left text-sm font-semibold">{header}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 text-sm text-gray-700">
-              {itemList.length > 0 ? (
-                itemList.map((item) => (
-                  <tr key={item.foundItemId} className="hover:bg-gray-50 cursor-pointer transition" onClick={() => setSelectedItem(item)}>
-                    <td className="px-4 py-3">{item.foundItemId}</td>
-                    <td className="px-4 py-3">{item.itemName}</td>
-                    <td className="px-4 py-3">{item.category}</td>
-                    <td className="px-4 py-3">{item.color}</td>
-                    <td className="px-4 py-3">{item.brand}</td>
-                    <td className="px-4 py-3">{item.location}</td>
-                    <td className="px-4 py-3">{item.foundDate}</td>
-                    <td className="px-4 py-3">{item.username}</td>
-                    <td className="px-4 py-3">{item.userEmail}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="9" className="px-4 py-6 text-center text-gray-500">No found items available.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex justify-end">
-          <button onClick={returnBack} className="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-indigo-700 transition">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <ArrowLeft size={18} />
             Return
           </button>
         </div>
+
+        <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
+          <div className="p-6 sm:p-8 border-b border-gray-200">
+            <div className="flex items-center gap-4">
+              <div className="bg-green-100 p-3 rounded-full">
+                <ArchiveRestore className="h-8 w-8 text-green-600" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">{pageTitle}</h2>
+                <p className="text-sm text-gray-500">{pageDescription}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  {["Item Name", "Category", "Location", "Found Date", "Reported By"].map((header) => (
+                    <th key={header} className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {itemList.length > 0 ? (
+                  itemList.map((item) => (
+                    <tr key={item.foundItemId} className="hover:bg-gray-50 cursor-pointer transition-colors" onClick={() => setSelectedItem(item)}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{item.itemName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.category}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.location}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.foundDate}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.username}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr><td colSpan="5" className="px-6 py-10 text-center text-gray-500">No found items reported.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
+
+      {/* Industry Standard Modal */}
       {selectedItem && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-11/12 md:w-1/2 relative">
-            <button onClick={() => setSelectedItem(null)} className="absolute top-3 right-3 text-gray-600 hover:text-gray-800">
-              <FaTimes size={20} />
-            </button>
-            <div className="flex flex-col items-center space-y-4">
-              <img src={selectedItem.imageUrl || "https://via.placeholder.com/200"} alt={selectedItem.itemName} className="w-40 h-40 object-cover rounded-md shadow-md"/>
-              <h2 className="text-2xl font-bold text-gray-800">{selectedItem.itemName}</h2>
-              <div className="w-full text-left space-y-2 text-gray-700">
-                <p><span className="font-semibold">Item ID:</span> {selectedItem.foundItemId}</p>
-                <p><span className="font-semibold">Category:</span> {selectedItem.category}</p>
-                <p><span className="font-semibold">Brand:</span> {selectedItem.brand}</p>
-                <p><span className="font-semibold">Color:</span> {selectedItem.color}</p>
-                <p><span className="font-semibold">Location:</span> {selectedItem.location}</p>
-                <p><span className="font-semibold">Found Date:</span> {selectedItem.foundDate}</p>
-                <p><span className="font-semibold">Reported By:</span> {selectedItem.username}</p>
-                <p><span className="font-semibold">Email:</span> {selectedItem.userEmail}</p>
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4 transition-opacity duration-300">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl flex flex-col sm:flex-row animate-scale-in">
+            <div className="w-full sm:w-2/5 bg-gray-100 rounded-t-lg sm:rounded-l-lg sm:rounded-t-none flex items-center justify-center p-6">
+              <img
+                src={selectedItem.imageUrl || "https://placehold.co/400x400/e2e8f0/cbd5e0?text=Image"}
+                alt={selectedItem.itemName}
+                className="max-h-80 w-auto object-contain rounded-md"
+              />
+            </div>
+
+            <div className="w-full sm:w-3/5 p-6 flex flex-col">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <span className="text-xs font-bold bg-green-100 text-green-800 px-3 py-1 rounded-full uppercase tracking-wider">
+                    Found Item
+                  </span>
+                  <h2 className="text-3xl font-bold text-gray-900 mt-2">{selectedItem.itemName}</h2>
+                </div>
+                <button onClick={() => setSelectedItem(null)} className="text-gray-400 hover:text-gray-700">
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 my-4 flex-grow">
+                <DetailItem label="Category" value={selectedItem.category} />
+                <DetailItem label="Brand" value={selectedItem.brand} />
+                <DetailItem label="Color" value={selectedItem.color} />
+                <DetailItem label="Location Found" value={selectedItem.location} />
+                <DetailItem label="Date Found" value={selectedItem.foundDate} />
+              </div>
+
+              <div className="border-t border-gray-200 pt-4 mt-auto">
+                <div className="flex items-center gap-3">
+                  <User size={24} className="text-gray-500" />
+                  <div>
+                    <p className="text-xs text-gray-500">Reported By</p>
+                    <p className="font-semibold text-gray-800">{selectedItem.username} ({selectedItem.userEmail})</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

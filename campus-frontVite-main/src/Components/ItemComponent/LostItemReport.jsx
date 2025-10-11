@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  getAllLostItems,
-  getLostItemsByUser,
-} from "../../Services/ItemService";
+import { getAllLostItems, getLostItemsByUser } from "../../Services/ItemService";
 import { getUserDetails } from "../../Services/LoginService";
-import { FaSearch, FaRegSadTear, FaTimes } from "react-icons/fa";
+import { Search, ArrowLeft, X, User } from "lucide-react";
+
+// Compact detail item for grid layout
+const DetailItem = ({ label, value }) => (
+  <div>
+    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{label}</p>
+    <p className="font-medium text-gray-800">{value || "N/A"}</p>
+  </div>
+);
 
 const LostItemReport = () => {
   const [lostItems, setLostItems] = useState([]);
@@ -14,196 +19,164 @@ const LostItemReport = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const navigate = useNavigate();
 
-  // Load user details
   useEffect(() => {
     getUserDetails()
       .then((res) => setCurrentUser(res.data))
       .catch(() => setLoading(false));
   }, []);
 
-  // Fetch lost items based on role
   useEffect(() => {
-    if (currentUser) {
-      const fetchItems =
-        currentUser.role === "Admin" ? getAllLostItems : getLostItemsByUser;
-      fetchItems()
-        .then((res) => setLostItems(res.data))
-        .catch(() => console.error("Failed to load items"))
-        .finally(() => setLoading(false));
-    }
+    if (!currentUser) return;
+    const fetchItems = currentUser.role === "Admin" ? getAllLostItems : getLostItemsByUser;
+    fetchItems()
+      .then((res) => setLostItems(res.data))
+      .catch(() => console.error("Failed to load items"))
+      .finally(() => setLoading(false));
   }, [currentUser]);
 
-  const returnBack = () => {
-    navigate(currentUser?.role === "Admin" ? "/AdminMenu" : "/StudentMenu");
-  };
-
-  if (loading) return <div className="text-center mt-10">Loading items...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-50 text-gray-600 font-medium">
+        Loading report...
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4 md:p-8">
-      <div className="mx-auto bg-white rounded-xl shadow-lg p-6">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <FaSearch size={40} className="text-indigo-600 mx-auto mb-3" />
-          <h1 className="text-3xl font-bold text-gray-800">Lost Item Report</h1>
-          <p className="text-gray-500 mt-2">
-            Items that are currently reported as lost.
-          </p>
-        </div>
-
-        {/* Table or No Items */}
-        {lostItems.length === 0 ? (
-          <div className="text-center py-10">
-            <FaRegSadTear size={50} className="mx-auto text-gray-400 mb-4" />
-            <h2 className="text-xl font-semibold text-gray-700">
-              No Lost Items Found
-            </h2>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-100">
-                <tr>
-                  {[
-                    "Item ID",
-                    "Item Name",
-                    "Category",
-                    "Brand",
-                    "Color",
-                    "Location Lost",
-                    "Lost Date",
-                    "Reported By",
-                  ].map((header) => (
-                    <th
-                      key={header}
-                      className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase"
-                    >
-                      {header}
-                    </th>
-                  ))}
-                  {/* Action column only for Student */}
-                  {currentUser?.role === "Student" && (
-                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">
-                      Action
-                    </th>
-                  )}
-                </tr>
-              </thead>
-
-              <tbody className="bg-white divide-y divide-gray-200">
-                {lostItems.map((item) => (
-                  <tr
-                    key={item.lostItemId}
-                    className="hover:bg-indigo-50 transition"
-                  >
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {item.lostItemId}
-                    </td>
-                    <td
-                      className="px-6 py-4 text-sm text-indigo-600 font-semibold cursor-pointer hover:underline"
-                      onClick={() => setSelectedItem(item)}
-                    >
-                      {item.itemName}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {item.category}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {item.brand}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {item.color}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {item.location}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {item.lostDate}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {item.username}
-                    </td>
-                    {/* Mark as Found - Only for Student */}
-                    {currentUser?.role === "Student" && (
-                      <td className="px-6 py-4 text-sm">
-                        <button
-                          onClick={() =>
-                            navigate(`/mark-found/${item.lostItemId}`)
-                          }
-                          className="bg-green-600 text-white py-1.5 px-4 rounded-md hover:bg-green-700 transition font-semibold"
-                        >
-                          Mark as Found
-                        </button>
-                      </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Return Button */}
-        <div className="flex justify-end mt-6">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-6">
           <button
-            onClick={returnBack}
-            className="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-indigo-700 transition"
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800 transition-colors"
           >
+            <ArrowLeft size={18} />
             Return
           </button>
         </div>
+
+        <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
+          <div className="p-6 sm:p-8 border-b border-gray-200">
+            <div className="flex items-center gap-4">
+              <div className="bg-red-100 p-3 rounded-full">
+                <Search className="h-8 w-8 text-red-600" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">Lost Item Report</h2>
+                <p className="text-sm text-gray-500">All items currently reported as lost.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  {["Item Name", "Category", "Location Lost", "Lost Date", "Reported By", "Action"].map(
+                    (header) => (
+                      <th
+                        key={header}
+                        className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                      >
+                        {header}
+                      </th>
+                    )
+                  )}
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {lostItems.length > 0 ? (
+                  lostItems.map((item) => (
+                    <tr
+                      key={item.lostItemId}
+                      className="hover:bg-gray-50 cursor-pointer transition-colors"
+                      onClick={() => setSelectedItem(item)}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                        {item.itemName}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.category}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.location}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.lostDate}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.username}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        {currentUser?.role === "Student" && item.username === currentUser.username && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/mark-found/${item.lostItemId}`);
+                            }}
+                            className="bg-green-600 text-white py-1.5 px-3 rounded-md hover:bg-green-700 transition font-semibold text-xs"
+                          >
+                            Mark as Found
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-10 text-center text-gray-500">
+                      No lost items reported.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-      {/* Modal Popup for Details */}
+      {/* Modal */}
       {selectedItem && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full relative">
-            <button
-              onClick={() => setSelectedItem(null)}
-              className="absolute top-3 right-3 text-gray-600 hover:text-gray-800"
-            >
-              <FaTimes size={20} />
-            </button>
-            <div className="flex flex-col items-center space-y-4 p-6">
-              {selectedItem.imageUrl && (
-                <img
-                  src={selectedItem.imageUrl}
-                  alt={selectedItem.itemName}
-                  className="w-40 h-40 object-cover rounded-md shadow-md"
-                />
-              )}
-              <h2 className="text-2xl font-bold text-gray-800 text-center">
-                {selectedItem.itemName}
-              </h2>
-              <div className="w-full text-left space-y-2 text-gray-700">
-                <p>
-                  <span className="font-semibold">Item ID:</span>{" "}
-                  {selectedItem.lostItemId}
-                </p>
-                <p>
-                  <span className="font-semibold">Category:</span>{" "}
-                  {selectedItem.category}
-                </p>
-                <p>
-                  <span className="font-semibold">Brand:</span>{" "}
-                  {selectedItem.brand}
-                </p>
-                <p>
-                  <span className="font-semibold">Color:</span>{" "}
-                  {selectedItem.color}
-                </p>
-                <p>
-                  <span className="font-semibold">Location Lost:</span>{" "}
-                  {selectedItem.location}
-                </p>
-                <p>
-                  <span className="font-semibold">Lost Date:</span>{" "}
-                  {selectedItem.lostDate}
-                </p>
-                <p>
-                  <span className="font-semibold">Reported By:</span>{" "}
-                  {selectedItem.username}
-                </p>
+        <div
+          className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4 transition-opacity duration-300"
+          onClick={() => setSelectedItem(null)} // close when clicking outside
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl w-full max-w-3xl flex flex-col sm:flex-row animate-scale-in"
+            onClick={(e) => e.stopPropagation()} // prevent clicks inside from closing
+          >
+            <div className="w-full sm:w-2/5 bg-gray-100 rounded-t-lg sm:rounded-l-lg sm:rounded-t-none flex items-center justify-center p-6">
+              <img
+                src={selectedItem.imageUrl || "https://placehold.co/400x400/e2e8f0/cbd5e0?text=Image"}
+                alt={selectedItem.itemName}
+                className="max-h-80 w-auto object-contain rounded-md"
+              />
+            </div>
+
+            <div className="w-full sm:w-3/5 p-6 flex flex-col">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <span className="text-xs font-bold bg-red-100 text-red-800 px-3 py-1 rounded-full uppercase tracking-wider">
+                    Lost Item
+                  </span>
+                  <h2 className="text-3xl font-bold text-gray-900 mt-2">{selectedItem.itemName}</h2>
+                </div>
+                <button
+                  onClick={() => setSelectedItem(null)}
+                  className="text-gray-400 hover:text-gray-700"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 my-4 flex-grow">
+                <DetailItem label="Category" value={selectedItem.category} />
+                <DetailItem label="Brand" value={selectedItem.brand} />
+                <DetailItem label="Color" value={selectedItem.color} />
+                <DetailItem label="Location Lost" value={selectedItem.location} />
+                <DetailItem label="Date Lost" value={selectedItem.lostDate} />
+              </div>
+
+              <div className="border-t border-gray-200 pt-4 mt-auto">
+                <div className="flex items-center gap-3">
+                  <User size={24} className="text-gray-500" />
+                  <div>
+                    <p className="text-xs text-gray-500">Reported By</p>
+                    <p className="font-semibold text-gray-800">{selectedItem.username}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

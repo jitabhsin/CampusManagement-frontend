@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getLostItemById, deleteLostItemById, foundItemSubmission } from "../../Services/ItemService";
+import {
+  getLostItemById,
+  deleteLostItemById,
+  foundItemSubmission,
+} from "../../Services/ItemService";
 import { getUserDetails } from "../../Services/LoginService";
+import { CheckCircle, ArrowLeft } from "lucide-react";
 
 const MarkAsFound = () => {
   const { id } = useParams();
@@ -9,8 +14,8 @@ const MarkAsFound = () => {
   const [lostItem, setLostItem] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const today = new Date().toISOString().slice(0, 10);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [foundDate, setFoundDate] = useState(""); // user-selected date
 
   useEffect(() => {
     Promise.all([getUserDetails(), getLostItemById(id)])
@@ -25,73 +30,138 @@ const MarkAsFound = () => {
   const handleMarkAsFound = async () => {
     if (!lostItem || !user) return;
 
+    if (!foundDate) {
+      alert("Please select a found date before confirming.");
+      return;
+    }
+
+    if (new Date(foundDate) < new Date(lostItem.lostDate)) {
+      alert("Found date cannot be earlier than the lost date.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
     const foundItem = {
-      itemName: lostItem.itemName,
-      category: lostItem.category,
-      color: lostItem.color,
-      brand: lostItem.brand,
-      location: lostItem.location,
-      imageUrl: lostItem.imageUrl,
+      ...lostItem,
       username: user.username,
       userEmail: user.email,
-      foundDate: today,
+      foundDate: foundDate,
     };
 
     try {
       await foundItemSubmission(foundItem);
       await deleteLostItemById(lostItem.lostItemId);
       alert("Item marked as found successfully!");
-      navigate(user.role === "Admin" ? "/AdminMenu" : "/StudentMenu");
+      navigate("/LostReport");
     } catch (error) {
       console.error(error);
       alert("Operation failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  if (loading) return <div className="text-center mt-10 text-gray-600">Loading item details...</div>;
-  if (!lostItem) return <div className="text-center mt-10 text-gray-600">Item not found.</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-50 text-gray-600 font-medium">
+        Loading item details...
+      </div>
+    );
+  }
+
+  if (!lostItem) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-50 text-red-600 font-medium">
+        Item not found.
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white shadow-xl rounded-2xl w-full max-w-lg p-8">
-        <h1 className="text-3xl font-bold text-indigo-700 text-center mb-6">
-          Mark Item as Found
-        </h1>
-        <p className="text-gray-600 text-center mb-6">
-          Review the item details before confirming.
-        </p>
-
-        <div className="space-y-3 text-gray-700">
-          <p><strong>Item Name:</strong> {lostItem.itemName}</p>
-          <p><strong>Category:</strong> {lostItem.category}</p>
-          <p><strong>Brand:</strong> {lostItem.brand}</p>
-          <p><strong>Color:</strong> {lostItem.color}</p>
-          <p><strong>Location Lost:</strong> {lostItem.location}</p>
-          <p><strong>Reported By:</strong> {lostItem.username}</p>
-          <p><strong>Lost Date:</strong> {lostItem.lostDate}</p>
-          <p><strong>Found Date:</strong> {today}</p>
-          {lostItem.imageUrl && (
-            <img
-              src={lostItem.imageUrl}
-              alt="Lost Item"
-              className="w-40 h-40 object-cover rounded-md mx-auto mt-4 border border-gray-200 shadow-sm"
-            />
-          )}
-        </div>
-
-        <div className="flex justify-between mt-8">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8 flex items-center justify-center">
+      <div className="max-w-2xl w-full">
+        <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="bg-gray-500 text-white px-5 py-2 rounded-xl hover:bg-gray-600 transition font-medium"
+            className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800"
           >
-            Return
+            <ArrowLeft size={18} /> Return
           </button>
-          <button
-            onClick={handleMarkAsFound}
-            className="bg-green-600 text-white px-5 py-2 rounded-xl hover:bg-green-700 transition font-medium"
-          >
-            Confirm Found
-          </button>
+        </div>
+
+        <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
+          <div className="p-8 text-center">
+            <CheckCircle className="h-12 w-12 text-green-500 mx-auto bg-green-100 p-2 rounded-full mb-4" />
+            <h1 className="text-2xl font-bold text-gray-800">
+              Confirm Item Found
+            </h1>
+            <p className="text-gray-500 mt-2">
+              Choose the date when this item was found and confirm the update.
+            </p>
+          </div>
+
+          <div className="p-8 border-t border-gray-200">
+            <div className="flex flex-col md:flex-row gap-8 items-center">
+              <img
+                src={lostItem.imageUrl}
+                alt={lostItem.itemName}
+                className="w-40 h-40 object-cover rounded-lg shadow-md border"
+              />
+              <div className="space-y-2 text-gray-700 text-sm w-full">
+                <p><strong>Item Name:</strong> {lostItem.itemName}</p>
+                <p><strong>Category:</strong> {lostItem.category}</p>
+                <p><strong>Location Lost:</strong> {lostItem.location}</p>
+                <p><strong>Lost Date:</strong> {lostItem.lostDate}</p>
+
+                {/* Custom Date Picker */}
+                <div className="mt-3 w-full md:w-2/3">
+                  <label className="font-semibold text-gray-800 block mb-1">
+                    Found Date <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative w-full cursor-pointer" onClick={() => document.getElementById('foundDateInput').showPicker?.()}>
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg
+                        className="h-5 w-5 text-gray-400"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+                    <input
+                      id="foundDateInput"
+                      type="date"
+                      value={foundDate}
+                      onChange={(e) => setFoundDate(e.target.value)}
+                      min={lostItem.lostDate}
+                      max={new Date().toISOString().slice(0, 10)}
+                      required
+                      className="block w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all"
+                    />
+                  </div>
+                </div>
+                {/* End Date Picker */}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 px-8 py-4 flex justify-end">
+            <button
+              onClick={handleMarkAsFound}
+              disabled={isSubmitting}
+              className="bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700 disabled:opacity-60 transition-colors"
+            >
+              {isSubmitting ? "Confirming..." : "Confirm & Mark Found"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
