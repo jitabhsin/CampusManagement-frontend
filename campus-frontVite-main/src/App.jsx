@@ -21,7 +21,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Authentication */}
-          <Route path="/" element={<LoginPage />} />
+          <Route path="/CampusManagement-frontend/" element={<LoginPage />} />
           <Route path="/Register" element={<SigninPage />} />
 
           {/* Admin and Student Menus */}

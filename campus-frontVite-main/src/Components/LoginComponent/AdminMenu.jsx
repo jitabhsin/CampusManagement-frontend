@@ -27,13 +27,11 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [usersResponse, lostResponse, foundResponse] = await Promise.all(
-          [
-            getAllStudents(),
-            getAllLostItems(),
-            getAllFoundItems(),
-          ]
-        );
+        const [usersResponse, lostResponse, foundResponse] = await Promise.all([
+          getAllStudents(),
+          getAllLostItems(),
+          getAllFoundItems(),
+        ]);
         setStats({
           totalUsers: usersResponse.data.length,
           totalLost: lostResponse.data.length,
@@ -57,6 +55,11 @@ const AdminDashboard = () => {
     timeoutRef.current = setTimeout(() => {
       setOpenDropdown(null);
     }, 200);
+  };
+
+  // 🔹 Handle Sign Out redirection
+  const handleSignOut = () => {
+    window.location.href = "http://localhost:3939/CampusManagement-frontend/";
   };
 
   return (
@@ -116,16 +119,13 @@ const AdminDashboard = () => {
                   </button>
 
                   <div
-                    className={`
-                      absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 overflow-hidden
-                      transition-all ease-out duration-200
-                      ${theme === "light" ? "bg-white" : "bg-gray-800"}
-                      ${
-                        isOpen
-                          ? "opacity-100 scale-100 translate-y-0"
-                          : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
-                      }
-                    `}
+                    className={`absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 overflow-hidden transition-all ease-out duration-200 ${
+                      theme === "light" ? "bg-white" : "bg-gray-800"
+                    } ${
+                      isOpen
+                        ? "opacity-100 scale-100 translate-y-0"
+                        : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                    }`}
                   >
                     <div className="py-1">
                       {menu === "Reports" && (
@@ -173,8 +173,10 @@ const AdminDashboard = () => {
 
           <div className="flex items-center space-x-6">
             <ThemeToggleButton />
-            <Link
-              to="/"
+
+            {/* 🔹 Updated Sign Out Button */}
+            <button
+              onClick={handleSignOut}
               className={`flex items-center text-base font-medium transition-colors duration-200 ${
                 theme === "light"
                   ? "text-gray-700 hover:text-blue-600"
@@ -182,7 +184,7 @@ const AdminDashboard = () => {
               }`}
             >
               <LogOut className="w-5 h-5 mr-2" /> Sign Out
-            </Link>
+            </button>
           </div>
         </div>
       </nav>

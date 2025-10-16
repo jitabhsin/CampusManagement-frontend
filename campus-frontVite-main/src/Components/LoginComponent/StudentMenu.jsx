@@ -101,6 +101,11 @@ const StudentMenuGoodUI = () => {
     setMobileDropdown(mobileDropdown === name ? null : name);
   };
 
+  // 🔹 Handle Sign Out redirection
+  const handleSignOut = () => {
+    window.location.href = "http://localhost:3939/CampusManagement-frontend/";
+  };
+
   return (
     <div
       className={`min-h-screen font-sans antialiased ${
@@ -187,8 +192,10 @@ const StudentMenuGoodUI = () => {
           <div className="flex items-center">
             <div className="hidden md:flex items-center space-x-6">
               <ThemeToggleButton />
-              <Link
-                to="/"
+
+              {/* 🔹 Updated Sign Out Button */}
+              <button
+                onClick={handleSignOut}
                 className={`flex items-center text-base font-medium transition-colors duration-200 ${
                   theme === "light"
                     ? "text-gray-700 hover:text-blue-600"
@@ -196,7 +203,7 @@ const StudentMenuGoodUI = () => {
                 }`}
               >
                 <LogOut className="w-5 h-5 mr-2" /> Sign Out
-              </Link>
+              </button>
             </div>
             <div className="md:hidden ml-4">
               <button
@@ -256,22 +263,28 @@ const StudentMenuGoodUI = () => {
               ))}
               <div className="border-t pt-4 mt-4 border-gray-200 dark:border-gray-700">
                 <div className="px-2 space-y-2">
-                    <div className="flex items-center justify-between rounded-md px-3 py-2">
-                        <span className={`font-medium ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
-                            Theme
-                        </span>
-                        <ThemeToggleButton />
-                    </div>
-                    <Link
-                        to="/"
-                        className={`flex items-center px-3 py-2 text-base font-medium rounded-md ${
-                        theme === "light"
-                            ? "text-gray-700 hover:bg-blue-50"
-                            : "text-gray-300 hover:bg-gray-700"
-                        }`}
+                  <div className="flex items-center justify-between rounded-md px-3 py-2">
+                    <span
+                      className={`font-medium ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}
                     >
-                        <LogOut className="w-5 h-5 mr-3" /> Sign Out
-                    </Link>
+                      Theme
+                    </span>
+                    <ThemeToggleButton />
+                  </div>
+
+                  {/* 🔹 Updated Mobile Sign Out Button */}
+                  <button
+                    onClick={handleSignOut}
+                    className={`flex items-center px-3 py-2 text-base font-medium rounded-md ${
+                      theme === "light"
+                        ? "text-gray-700 hover:bg-blue-50"
+                        : "text-gray-300 hover:bg-gray-700"
+                    }`}
+                  >
+                    <LogOut className="w-5 h-5 mr-3" /> Sign Out
+                  </button>
                 </div>
               </div>
             </div>

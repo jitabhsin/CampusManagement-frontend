@@ -7,4 +7,6 @@ export default defineConfig({
   plugins: [react(),
     tailwindcss(),
   ],
+  // base must match the repo name when deploying to GitHub Pages
+  base: '/CampusManagement-frontend/',
 })
