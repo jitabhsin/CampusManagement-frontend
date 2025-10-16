@@ -12,6 +12,7 @@ import Personal from "./Components/LoginComponent/Personal";
 
 import DeleteStudentList from "./Components/LoginComponent/DeleteStudentList";
 import LostItemTrack from "./Components/ItemComponent/LostItemTrack";
+import FoundItemTrack from "./Components/ItemComponent/FoundItemTrack"; // Import the new component
 import MarkAsFound from "./Components/ItemComponent/MarkAsFound";
 import "./App.css";
 
@@ -41,6 +42,7 @@ function App() {
           {/* Found Item Routes */}
           <Route path="/FoundSubmit" element={<FoundItemSubmission />} />
           <Route path="/FoundReport" element={<FoundItemReport />} />
+          <Route path="/FoundItemTrack" element={<FoundItemTrack />} /> {/* Add the new route here */}
 
           {/* Mark as Found Route */}
           <Route path="/mark-found/:id" element={<MarkAsFound />} />

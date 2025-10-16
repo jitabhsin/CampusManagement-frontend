@@ -14,5 +14,8 @@ export const getFoundItemById = (id) => axios.get(`${BASE_URL}/found-items/${id}
 export const foundItemSubmission = (foundItem) => axios.post(`${BASE_URL}/found-items`, foundItem);
 export const deleteFoundItemById = (id) => axios.delete(`${BASE_URL}/found-items/${id}`);
 
-export const getMatchingFoundItems = (lostItemId, threshold = 0.8) =>
-  axios.get(`${BASE_URL}/fuzzy/match/${lostItemId}?threshold=${threshold}`);
+export const getMatchingFoundItems = (lostItemId, threshold = 0.7) =>
+  axios.get(`${BASE_URL}/fuzzy/match/found/${lostItemId}?threshold=${threshold}`);
+
+export const getMatchingLostItems = (foundItemId, threshold = 0.7) =>
+  axios.get(`${BASE_URL}/fuzzy/match/lost/${foundItemId}?threshold=${threshold}`);
