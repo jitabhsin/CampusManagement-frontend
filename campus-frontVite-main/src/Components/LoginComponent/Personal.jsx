@@ -106,26 +106,37 @@ const Personal = () => {
 
           {/* Stats Section */}
           <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 p-6 sm:p-8 border-t ${theme === 'light' ? 'border-gray-200 bg-gray-50' : 'border-gray-700 bg-gray-800'}`}>
-            {/* Lost Items Card */}
-            <div className={`${theme === 'light' ? 'bg-red-50' : 'bg-red-900/20'} rounded-xl p-4 flex items-center gap-4`}>
-              <div className="bg-red-100 p-3 rounded-full">
-                <Search className="h-6 w-6 text-red-600" />
+            {/* Lost Items Card Button */}
+            <button
+              onClick={() => navigate("/LostReport")}
+              className="w-full text-left transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded-xl"
+            >
+              <div className={`${theme === 'light' ? 'bg-red-50' : 'bg-red-900/20'} rounded-xl p-4 flex items-center gap-4 h-full`}>
+                <div className="bg-red-100 p-3 rounded-full">
+                  <Search className="h-6 w-6 text-red-600" />
+                </div>
+                <div>
+                  <p className={`${theme === 'light' ? 'text-sm text-gray-600' : 'text-sm text-gray-300'}`}>Items Reported Lost</p>
+                  <p className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>{lostCount}</p>
+                </div>
               </div>
-              <div>
-                <p className={`${theme === 'light' ? 'text-sm text-gray-600' : 'text-sm text-gray-300'}`}>Items Reported Lost</p>
-                <p className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>{lostCount}</p>
+            </button>
+
+            {/* Found Items Card Button */}
+            <button
+              onClick={() => navigate("/FoundReport")}
+              className="w-full text-left transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 rounded-xl"
+            >
+              <div className={`${theme === 'light' ? 'bg-green-50' : 'bg-green-900/20'} rounded-xl p-4 flex items-center gap-4 h-full`}>
+                <div className="bg-green-100 p-3 rounded-full">
+                  <ArchiveRestore className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <p className={`${theme === 'light' ? 'text-sm text-gray-600' : 'text-sm text-gray-300'}`}>Items Reported Found</p>
+                  <p className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>{foundCount}</p>
+                </div>
               </div>
-            </div>
-            {/* Found Items Card */}
-            <div className={`${theme === 'light' ? 'bg-green-50' : 'bg-green-900/20'} rounded-xl p-4 flex items-center gap-4`}>
-              <div className="bg-green-100 p-3 rounded-full">
-                <ArchiveRestore className="h-6 w-6 text-green-600" />
-              </div>
-              <div>
-                <p className={`${theme === 'light' ? 'text-sm text-gray-600' : 'text-sm text-gray-300'}`}>Items Reported Found</p>
-                <p className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>{foundCount}</p>
-              </div>
-            </div>
+            </button>
           </div>
         </div>
       </div>

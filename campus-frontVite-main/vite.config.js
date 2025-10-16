@@ -8,5 +8,5 @@ export default defineConfig({
     tailwindcss(),
   ],
   // base must match the repo name when deploying to GitHub Pages
-  base: '/CampusManagement-frontend/',
+  base: '/',
 })
