@@ -8,7 +8,6 @@ import {
 import { Search, ChevronDown, Loader2, ArrowLeft, Eye } from "lucide-react";
 import { ThemeContext } from "../../Context/ThemeContext";
 
-// Debounce hook to prevent API calls on every keystroke
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(() => {
@@ -21,8 +20,6 @@ const useDebounce = (value, delay) => {
   }, [value, delay]);
   return debouncedValue;
 };
-
-// Updated FoundItemTile to be theme-aware
 const FoundItemTile = ({ item, onClick, theme }) => (
   <div
     className={`rounded-lg p-3 flex items-center gap-3 border cursor-pointer hover:shadow-md transition-shadow ${
@@ -61,7 +58,6 @@ const FoundItemTile = ({ item, onClick, theme }) => (
   </div>
 );
 
-// Updated LostItemPanel to be theme-aware
 const LostItemPanel = ({ item, onViewDetails, theme }) => {
   const [matches, setMatches] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -188,7 +184,6 @@ const LostItemPanel = ({ item, onViewDetails, theme }) => {
   );
 };
 
-// DetailsModal remains unchanged, it was already theme-aware
 const DetailsModal = ({ item, isOpen, onClose, theme }) => {
   if (!isOpen || !item) return null;
 
@@ -263,7 +258,7 @@ const DetailsModal = ({ item, isOpen, onClose, theme }) => {
 };
 
 
-// Main page component
+
 const LostItemTrack = () => {
   const navigate = useNavigate();
   const [lostItems, setLostItems] = useState([]);
@@ -276,10 +271,9 @@ const LostItemTrack = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { theme } = useContext(ThemeContext);
 
-  // Use the debounced value for searching
+  
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  // Fetch user's lost items on initial load
   useEffect(() => {
     getLostItemsByUser()
       .then((res) => {
@@ -292,7 +286,7 @@ const LostItemTrack = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // Memoize the search function
+
   const handleSearch = useCallback(async (query, user) => {
     if (!query.trim() || !user) {
       setSearchResults([]);
@@ -309,19 +303,18 @@ const LostItemTrack = () => {
     } finally {
       setSearchLoading(false);
     }
-  }, []); // Empty dependency array, this function is stable
+  }, []); 
 
-  // EFFECT for dynamic search-as-you-type
   useEffect(() => {
-    // Only search if the debounced query is present
+    
     if (debouncedSearchQuery && username) {
       handleSearch(debouncedSearchQuery, username);
     } else {
-      // Clear results if search is empty
+      
       setSearchResults([]);
       setSearchLoading(false);
     }
-  }, [debouncedSearchQuery, username, handleSearch]); // Depend on the debounced value
+  }, [debouncedSearchQuery, username, handleSearch]); 
 
   const openModal = (item) => {
     setSelectedItem(item);
@@ -386,9 +379,7 @@ const LostItemTrack = () => {
           </p>
         </div>
 
-        {/* New 2-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-8">
-          {/* Column 1: User's Lost Items (Dedicated Matches) */}
           <div className="lg:col-span-7">
             <h3
               className={`text-2xl font-bold mb-6 ${
@@ -433,7 +424,6 @@ const LostItemTrack = () => {
             )}
           </div>
 
-          {/* Column 2: Global Search (Search all Found Items) */}
           <div className="lg:col-span-5 mt-12 lg:mt-0">
             <div className="sticky top-8">
               <h3
@@ -443,7 +433,6 @@ const LostItemTrack = () => {
               >
                 Search for Found Items
               </h3>
-              {/* Search Bar */}
               <div className="mb-6">
                 <div className="relative">
                   <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -452,7 +441,7 @@ const LostItemTrack = () => {
                     placeholder="Search all found items..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    // onKeyPress removed for search-as-you-type
+                    
                     className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm ${
                       theme === "light"
                         ? "bg-white border-gray-300 text-gray-900"
@@ -460,12 +449,11 @@ const LostItemTrack = () => {
                     }`}
                   />
                   {searchLoading && (
-                     <Loader2 className="animate-spin text-blue-600 absolute right-3.5 top-1/2 transform -translate-y-1/2" size={20} />
+                      <Loader2 className="animate-spin text-blue-600 absolute right-3.5 top-1/2 transform -translate-y-1/2" size={20} />
                   )}
                 </div>
               </div>
 
-              {/* Search Results */}
               <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
                 {searchResults.length > 0 ? (
                   searchResults.map((item) => (
@@ -477,7 +465,7 @@ const LostItemTrack = () => {
                     />
                   ))
                 ) : (
-                  // Show message only if user is searching but no results
+                  
                   searchQuery && !searchLoading && (
                     <div
                       className={`p-8 rounded-xl text-center ${
