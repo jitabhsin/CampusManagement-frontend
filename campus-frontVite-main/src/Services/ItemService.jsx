@@ -18,4 +18,10 @@ export const getMatchingFoundItems = (lostItemId, threshold = 0.7) =>
   axios.get(`${BASE_URL}/fuzzy/match/found/${lostItemId}?threshold=${threshold}`);
 
 export const getMatchingLostItems = (foundItemId, threshold = 0.7) =>
-  axios.get(`${BASE_URL}/fuzzy/match/lost/${foundItemId}?threshold=${threshold}`);
+    axios.get(`${BASE_URL}/fuzzy/match/lost/${foundItemId}?threshold=${threshold}`);
+
+export const searchFoundItems = (query, username, threshold = 0.3) =>
+  axios.get(`${BASE_URL}/fuzzy/search/found?query=${encodeURIComponent(query)}&username=${username}&threshold=${threshold}`);
+
+export const searchLostItems = (query, username, threshold = 0.3) =>
+  axios.get(`${BASE_URL}/fuzzy/search/lost?query=${encodeURIComponent(query)}&username=${username}&threshold=${threshold}`);
