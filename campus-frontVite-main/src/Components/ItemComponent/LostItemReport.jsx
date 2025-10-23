@@ -188,6 +188,15 @@ const LostItemReport = () => {
           </div>
         </div>
       )}
+      {/* Floating Track Button */}
+<button
+  onClick={() => navigate("/LostItemTrack")}
+  className="fixed bottom-8 right-8 bg-red-600 text-white px-5 py-3 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 hover:shadow-2xl flex items-center gap-2"
+>
+  <Search className="h-5 w-5" />
+  Track Your Lost Item
+</button>
+
     </div>
   );
 };

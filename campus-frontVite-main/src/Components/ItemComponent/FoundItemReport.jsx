@@ -154,10 +154,22 @@ const FoundItemReport = () => {
                   </div>
                 </div>
               </div>
+              
             </div>
+            
           </div>
+          
         </div>
       )}
+      {/* Floating Track Button */}
+<button
+  onClick={() => navigate("/FoundItemTrack")}
+  className="fixed bottom-8 right-8 bg-green-600 text-white px-5 py-3 rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 hover:shadow-2xl flex items-center gap-2"
+>
+  <ArchiveRestore className="h-5 w-5" />
+  Track Your Found Item
+</button>
+
     </div>
   );
 };
